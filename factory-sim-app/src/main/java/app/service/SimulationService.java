@@ -1,11 +1,11 @@
 package app.service;
 
+import event.EventBus;
+import model.devices.machine.Machine;
 import model.factory.Factory;
 import model.material.Material;
-import model.production.ProductionLine;
-import model.production.Station;
-import model.devices.human.Worker;
-import simulation.SimulationEngine;
+import model.production.*;
+import simulation.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,16 +17,27 @@ public class SimulationService {
     private final ProductionLine line;
 
     public SimulationService() {
-        //1 line of 3 workers
+        EventBus eventBus = new EventBus();
         List<Station> stations = List.of(
-                new Worker("W1"),
-                new Worker("W2"),
-                new Worker("W3")
+                new Machine("M1", 3, eventBus),
+                new Machine("M2", 2, eventBus),
+                new Machine("M3", 1, eventBus)
         );
 
         this.line = new ProductionLine("Line A", stations);
         Factory factory = new Factory("Factory one", List.of(line));
-        this.engine = new SimulationEngine(factory);
+
+
+        RepairTechPool pool = new RepairTechPool(
+                List.of(
+                        new RepairTech("Bob"),
+                        new RepairTech("Job")
+                )
+        );
+
+        RepairManager repairManager = new RepairManager(pool, eventBus);
+
+        this.engine = new SimulationEngine(factory, repairManager, eventBus);
 
         //add input some
         line.addInput(new Material("Iron", 1));

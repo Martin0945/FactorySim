@@ -1,24 +1,16 @@
 package model.production;
 
+import lombok.Getter;
 import model.material.Material;
-import simulation.SimulationContext;
-import simulation.Simulatable;
 
-public abstract class Station implements Simulatable{
+@Getter
+public abstract class Station{
+    private final String name;
 
-    private String id;
-
-    public Station(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public void onTick(SimulationContext context) {
+    public Station(String name) {
+        this.name = name;
     }
 
     public abstract Material process(Material input);
 
-    public String getId() {
-        return id;
-    }
 }

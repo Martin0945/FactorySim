@@ -11,7 +11,7 @@ public class Worker extends Station {
 
     @Override
     public Material process(Material input) {
-        System.out.println("Worker " + getId() + " processed " + input.getName());
+        System.out.println("Worker " + getName() + " processed " + input.getName());
         return input;
     }
 }

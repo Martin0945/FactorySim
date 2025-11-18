@@ -4,11 +4,11 @@ import lombok.Getter;
 
 public class Material {
     @Getter
-    private String name;
+    private MaterialType type;
     private int quantity;
 
-    public Material(String name, int quantity) {
-        this.name = name;
+    public Material(MaterialType type, int quantity) {
+        this.type = type;
         this.quantity = quantity;
     }
 }

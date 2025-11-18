@@ -1,26 +1,27 @@
 package model.production;
 
 import lombok.Getter;
+import model.devices.Station;
+import model.devices.Workforce;
 import model.material.Material;
 import simulation.Simulatable;
 import simulation.SimulationContext;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class ProductionLine implements Simulatable {
     private String name;
-    private List<Station> stations;
+    private List<Workforce> workforces;
     private final List<Material> buffers;
     @Getter
     private final List<Material> outputs = new ArrayList<>();
 
-    public ProductionLine(String name, List<Station> stations) {
+    public ProductionLine(String name, List<Workforce> workforces) {
         this.name = name;
-        this.stations = stations;
+        this.workforces = workforces;
         this.buffers = new ArrayList<>();
-        stations.forEach(s -> buffers.add(null));
+        workforces.forEach(w -> buffers.add(null));
     }
 
     //put material into first station buffer
@@ -30,14 +31,14 @@ public class ProductionLine implements Simulatable {
 
     @Override
     public void onTick(SimulationContext context) {
-        for (int i = stations.size() - 1; i >= 0; i--) {
+        for (int i = workforces.size() - 1; i >= 0; i--) {
             Material current = buffers.get(i);
             if (current == null) continue;
             //process current material
-            Material processed = stations.get(i).process(current);
+            Material processed = workforces.get(i).process(current);
 
             //if this is last station, store output
-            if (i == stations.size() - 1) {
+            if (i == workforces.size() - 1) {
                 outputs.add(processed);
             }
             else {

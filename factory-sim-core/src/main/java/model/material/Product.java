@@ -1,10 +1,9 @@
 package model.material;
 
-public class Product extends Material{
-    private int quality;
+import lombok.AllArgsConstructor;
 
-    public Product(String name, int quantity, int quality) {
-        super(name, quantity);
-        this.quality = quality;
-    }
+@AllArgsConstructor
+public class Product{
+    ProductType type;
+
 }

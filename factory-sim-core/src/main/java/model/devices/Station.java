@@ -8,10 +8,11 @@ import model.devices.state.State;
 @Getter
 public abstract class Station extends Workforce {
     int electricity;
-    State state;
+    int wear;
+
     public Station(int electricity) {
-        this.state = new IdleState();
         this.electricity = electricity;
+        this.wear = 0;
     }
 
     protected abstract void increaseWear();

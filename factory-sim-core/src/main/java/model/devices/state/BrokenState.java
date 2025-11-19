@@ -4,7 +4,7 @@ public class BrokenState extends State {
     public State work(){
         return new WorkingState();
     }
-    public State brake(){
+    public State breakDown(){
         return this;
     }
     public State repair(){

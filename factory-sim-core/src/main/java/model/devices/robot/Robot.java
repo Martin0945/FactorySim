@@ -1,8 +1,10 @@
 package model.devices.robot;
 
+import lombok.Getter;
 import model.devices.Station;
-import model.devices.state.State;
+import model.inspection.Visitor;
 import model.material.Material;
+@Getter
 
 public class Robot extends Station {
     private RobotType robotType;
@@ -21,6 +23,10 @@ public class Robot extends Station {
 
     protected void increaseWear(){
 
+    }
+
+    public void acceptVisitor(Visitor v){
+        v.visit(this);
     }
 
 }

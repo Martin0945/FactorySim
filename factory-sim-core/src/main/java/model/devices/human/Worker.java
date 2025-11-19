@@ -1,8 +1,11 @@
 package model.devices.human;
 
-import model.devices.Station;
+import lombok.Getter;
 import model.devices.Workforce;
+import model.inspection.Visitor;
 import model.material.Material;
+
+@Getter
 
 public class Worker extends Workforce {
     int pay;
@@ -16,5 +19,10 @@ public class Worker extends Workforce {
     @Override
     public Material process(Material input) {
         return input;
+    }
+
+    @Override
+    public void acceptVisitor(Visitor v){
+        v.visit(this);
     }
 }

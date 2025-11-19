@@ -3,8 +3,7 @@ package model.devices.machine;
 import event.*;
 import lombok.Getter;
 import model.devices.Station;
-import model.devices.human.WorkerType;
-import model.devices.state.State;
+import model.inspection.Visitor;
 import model.material.Material;
 @Getter
 
@@ -31,7 +30,7 @@ public class Machine extends Station {
         wear += wearPerTick;
         if (wear >= breakThreshold && working) {
             working = false;
-            System.out.println("Machine " + getName() + " broke, wear " + wear + "%");
+            System.out.println("Machine " + getMachineType() + " broke, wear " + wear + "%");
 
             if (eventBus != null) {
                 eventBus.publish(new Event(EventType.BREAKDOWN,this,this.priority));
@@ -42,7 +41,7 @@ public class Machine extends Station {
     public void repair() {
         this.working = true;
         wear = 0.0;
-        System.out.println("Repaired " + getName());
+        System.out.println("Repaired " + getMachineType());
     }
 
     public Material process(Material input) {
@@ -51,4 +50,7 @@ public class Machine extends Station {
         return input;
     }
 
+    public void acceptVisitor(Visitor v){
+        v.visit(this);
+    }
 }

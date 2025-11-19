@@ -4,7 +4,7 @@ public class IdleState extends State {
     public State work(){
         return new WorkingState();
     }
-    public State brake(){
+    public State breakDown(){
         return new BrokenState();
     }
     public State repair(){

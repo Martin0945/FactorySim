@@ -2,10 +2,13 @@ package app.service;
 
 import event.EventBus;
 import model.devices.Workforce;
+import model.devices.human.EUIWorker;
+import model.devices.human.WheelAssembler;
 import model.devices.human.Worker;
 import model.devices.human.WorkerType;
-import model.devices.machine.Machine;
-import model.devices.machine.MachineType;
+import model.devices.machine.*;
+import model.devices.robot.AssemblyRobot;
+import model.devices.robot.PaintRobot;
 import model.devices.robot.Robot;
 import model.devices.robot.RobotType;
 import model.factory.Factory;
@@ -27,20 +30,20 @@ public class SimulationService {
     public SimulationService() {
         EventBus eventBus = new EventBus();
         List<Workforce> workforcesA = List.of(
-                new Machine(MachineType.LASER_CUTTER, 20, 1 ,  3, eventBus),
-                new Machine(MachineType.PLASTIC_MOLDER, 15, 2, 2, eventBus),
-                new Robot(RobotType.ASSEMBLY_ROBOT, 12),
-                new Robot(RobotType.PAINT_STATION, 10),
-                new Worker(WorkerType.WHEEL_ASSEMBLER, 300),
-                new Worker (WorkerType.EUI, 350)
+                new LaserCutter(eventBus),
+                new PlasticMolder(eventBus),
+                new AssemblyRobot(),
+                new PaintRobot(),
+                new EUIWorker(),
+                new WheelAssembler()
         );
 
         List<Workforce> workforcesB = List.of(
-                new Machine(MachineType.GLASS_CUTTER, 10, 1 , 3, eventBus),
-                new Machine(MachineType.CASE_MAKER, 18, 2, 2, eventBus),
-                new Robot(RobotType.ASSEMBLY_ROBOT, 12),
-                new Robot(RobotType.PAINT_STATION, 10),
-                new Worker (WorkerType.EUI, 350)
+                new GlassCutter(eventBus),
+                new CaseMaker(eventBus),
+                new AssemblyRobot(),
+                new PaintRobot(),
+                new EUIWorker()
         );
 
         this.lineA = new ProductionLine("Line A", workforcesA);

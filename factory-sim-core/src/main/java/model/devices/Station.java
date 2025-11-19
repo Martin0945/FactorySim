@@ -8,7 +8,7 @@ import model.devices.state.State;
 @Getter
 public abstract class Station extends Workforce {
     int electricity;
-    int wear;
+    protected int wear;
 
     public Station(int electricity) {
         this.electricity = electricity;

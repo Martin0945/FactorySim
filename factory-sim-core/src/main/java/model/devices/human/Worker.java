@@ -12,14 +12,10 @@ public class Worker extends Workforce {
     WorkerType workerType;
 
     public Worker(WorkerType workerType, int pay) {
-        this.pay = pay;
         this.workerType = workerType;
+        this.pay = pay;
     }
 
-    @Override
-    public Material process(Material input) {
-        return input;
-    }
 
     @Override
     public void acceptVisitor(Visitor v){

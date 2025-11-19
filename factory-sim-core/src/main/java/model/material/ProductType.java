@@ -1,5 +1,5 @@
 package model.material;
 
 public enum ProductType {
-    SCOOTER, PHONE
+    PAINTED_SCOOTER, PAINTED_PHONE,
 }

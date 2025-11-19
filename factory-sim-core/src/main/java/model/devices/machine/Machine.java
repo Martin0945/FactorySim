@@ -9,7 +9,6 @@ import model.material.Material;
 
 public class Machine extends Station {
     private boolean working = true;
-    private double wear = 0.0;
     private final double wearPerTick = 20.0;
     private final double breakThreshold = 80.0;
     private final int priority;
@@ -23,6 +22,7 @@ public class Machine extends Station {
         this.oil = oil;
         this.priority = priority;
         this.eventBus = eventBus;
+
     }
 
     @Override
@@ -40,15 +40,10 @@ public class Machine extends Station {
 
     public void repair() {
         this.working = true;
-        wear = 0.0;
+        wear = 0;
         System.out.println("Repaired " + getMachineType());
     }
 
-    public Material process(Material input) {
-        if (!working) return input;
-        increaseWear();
-        return input;
-    }
 
     public void acceptVisitor(Visitor v){
         v.visit(this);

@@ -31,28 +31,28 @@ public class ProductionLine implements Simulatable {
 
     @Override
     public void onTick(SimulationContext context) {
-        for (int i = workforces.size() - 1; i >= 0; i--) {
-            Material current = buffers.get(i);
-            if (current == null) continue;
-            //process current material
-            Material processed = workforces.get(i).process(current);
-
-            //if this is last station, store output
-            if (i == workforces.size() - 1) {
-                outputs.add(processed);
-            }
-            else {
-                //move to next station if empty
-                if (buffers.get(i + 1) == null) {
-                    buffers.set(i + 1, processed);
-                    buffers.set(i, null);
-                }
-                //else wait for next tick
-                else {
-                    buffers.set(i, processed);
-                }
-            }
-        }
+//        for (int i = workforces.size() - 1; i >= 0; i--) {
+//            Material current = buffers.get(i);
+//            if (current == null) continue;
+//            //process current material
+//            Material processed = workforces.get(i).process(current);
+//
+//            //if this is last station, store output
+//            if (i == workforces.size() - 1) {
+//                outputs.add(processed);
+//            }
+//            else {
+//                //move to next station if empty
+//                if (buffers.get(i + 1) == null) {
+//                    buffers.set(i + 1, processed);
+//                    buffers.set(i, null);
+//                }
+//                //else wait for next tick
+//                else {
+//                    buffers.set(i, processed);
+//                }
+//            }
+//        }
     }
 
 }

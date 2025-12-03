@@ -1,16 +1,31 @@
 package model.devices.state;
 
-public class WorkingState extends State {
-    public State work(){
-        return this;
+import model.devices.machine.Machine;
+import model.material.Material;
+
+public class WorkingState implements State {
+
+    @Override
+    public Material process(Machine machine, Material material) {
+        increaseWear(machine);
+        if(material.getType() == machine.getInput().getType()){
+            //also probably check quantity here
+            return machine.getOutput();
+        }
+        else{
+            //probably some failure event here
+            return material;
+        }
     }
-    public State breakDown(){
-        return new BrokenState();
+
+    @Override
+    public void increaseWear(Machine machine) {
+        machine.setWear(machine.getWear() + machine.getWearPerTick());
+        State.CheckWear(machine);
     }
-    public State repair(){
-        return new RepairingState();
-    }
-    public State idle(){
-        return new IdleState();
+
+    @Override
+    public String getState() {
+        return "Working";
     }
 }

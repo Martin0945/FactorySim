@@ -15,8 +15,11 @@ import model.factory.Factory;
 import model.material.Material;
 import model.material.MaterialType;
 import model.production.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import simulation.*;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -26,12 +29,14 @@ public class SimulationService {
     private final SimulationEngine engine;
     private final ProductionLine lineA;
     private final ProductionLine lineB;
+    private SseEmitter emitter;
 
     public SimulationService() {
         EventBus eventBus = new EventBus();
+        MachineFactory machineFactory = new MachineFactory(eventBus);
         List<Workforce> workforcesA = List.of(
-                new LaserCutter(eventBus),
-                new PlasticMolder(eventBus),
+                machineFactory.createMachine("LaserCutter"),
+                machineFactory.createMachine("PlasticMolder"),
                 new AssemblyRobot(),
                 new PaintRobot(),
                 new EUIWorker(),
@@ -39,8 +44,8 @@ public class SimulationService {
         );
 
         List<Workforce> workforcesB = List.of(
-                new GlassCutter(eventBus),
-                new CaseMaker(eventBus),
+                machineFactory.createMachine("GlassCutter"),
+                machineFactory.createMachine("CaseMaker"),
                 new AssemblyRobot(),
                 new PaintRobot(),
                 new EUIWorker()
@@ -71,10 +76,28 @@ public class SimulationService {
         lineA.addInput(new Material(MaterialType.PAINT, 1));
 
 
+        eventBus.setUiListener(event -> {
+            try {
+                emitter.send(event, MediaType.APPLICATION_JSON);
+            } catch (Exception e) {
+                emitter = null; //disconnected client
+            }
+        });
     }
 
     public String tick() {
         engine.runTick();
         return "Tick " + engine.getCurrentTick() + " done. Outputs: " + lineA.getOutputs().size();
+    }
+
+    public Object getFactoryState() {
+        return null; //placeholder
+    }
+
+    public SseEmitter createEventStream() {
+        emitter = new SseEmitter(0L);
+        emitter.onCompletion(() -> emitter = null);
+        emitter.onTimeout(() -> emitter = null);
+        return emitter;
     }
 }

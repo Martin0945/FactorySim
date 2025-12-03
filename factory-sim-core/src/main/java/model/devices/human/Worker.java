@@ -21,4 +21,9 @@ public class Worker extends Workforce {
     public void acceptVisitor(Visitor v){
         v.visit(this);
     }
+
+    @Override
+    public Material process(Material current) {
+        return current;
+    }
 }

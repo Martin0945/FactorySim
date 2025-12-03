@@ -20,6 +20,11 @@ public class Factory implements Simulatable {
     private List<Robot> robots;
     private Inventory inventory;
 
+    public Factory(String factoryName, List<ProductionLine> lines) {
+        this.name = factoryName;
+        this.productionLines = lines;
+    }
+
 
     @Override
     public void onTick(SimulationContext context) {

@@ -27,4 +27,9 @@ public class Robot extends Station {
         v.visit(this);
     }
 
+    @Override
+    public Material process(Material current) {
+        return null;
+    }
+
 }

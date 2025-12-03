@@ -14,7 +14,7 @@ public abstract class Workforce {
         this.state = new IdleState();
     }
 
-
     public abstract void acceptVisitor(Visitor v);
 
+    public abstract Material process(Material current);
 }

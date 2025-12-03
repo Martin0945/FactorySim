@@ -1,16 +1,26 @@
 package model.devices.state;
 
-public class IdleState extends State {
-    public State work(){
-        return new WorkingState();
+import model.devices.machine.Machine;
+import model.material.Material;
+
+public class IdleState implements State {
+
+    @Override
+    public Material process(Machine machine, Material material) {
+        increaseWear(machine);
+        machine.setState(new WorkingState());   //turn on machine
+        return material;
     }
-    public State breakDown(){
-        return new BrokenState();
+
+    @Override
+    public void increaseWear(Machine machine) {
+        machine.setWear(machine.getWear() + machine.getWearPerTick() / 2);  //slower wear when idle
+        State.CheckWear(machine);
     }
-    public State repair(){
-        return new RepairingState();
-    }
-    public State idle(){
-        return this;
+
+
+    @Override
+    public String getState() {
+        return "Idle";
     }
 }

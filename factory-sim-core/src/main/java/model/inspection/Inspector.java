@@ -8,7 +8,7 @@ public class Inspector implements Visitor {
 
     @Override
     public void visit(Machine m){
-        System.out.println("Report from inspector: machine %s has wear of %d%%".formatted(m.getMachineType(), m.getWear()));
+        System.out.println("Report from inspector: machine %s has wear of %d%%".formatted(m.getName(), m.getWear()));
     }
 
     @Override

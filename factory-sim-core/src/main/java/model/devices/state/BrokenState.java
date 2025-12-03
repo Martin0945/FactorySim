@@ -1,16 +1,23 @@
 package model.devices.state;
 
-public class BrokenState extends State {
-    public State work(){
-        return new WorkingState();
+import model.devices.machine.Machine;
+import model.material.Material;
+
+public class BrokenState implements State {
+
+    @Override
+    public Material process(Machine machine, Material material) {
+        //cannot change
+        return material;
     }
-    public State breakDown(){
-        return this;
+
+    @Override
+    public void increaseWear(Machine machine) {
+        //do nothing
     }
-    public State repair(){
-        return new RepairingState();
-    }
-    public State idle(){
-        return new IdleState();
+
+    @Override
+    public String getState() {
+        return "Broken";
     }
 }

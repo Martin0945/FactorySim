@@ -1,7 +1,6 @@
 package model.devices.human;
 
 
-import model.devices.machine.MachineType;
 import model.material.Material;
 import model.material.MaterialType;
 

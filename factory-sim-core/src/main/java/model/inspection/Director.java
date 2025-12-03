@@ -7,7 +7,7 @@ import model.devices.robot.Robot;
 public class Director implements Visitor {
     @Override
     public void visit(Machine m){
-        System.out.println("Report from director: machine %s in in state %s".formatted(m.getMachineType(), m.getState()));
+        System.out.println("Report from director: machine %s in in state %s".formatted(m.getName(), m.getState()));
     }
 
     @Override

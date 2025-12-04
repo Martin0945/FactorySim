@@ -2,28 +2,33 @@ package model.devices.machine;
 
 import model.material.MaterialType;
 
+import java.util.List;
+
 public enum MachineConfig {
-    GLASS_CUTTER("GlassCutter", MaterialType.GLASS, 1, MaterialType.PHONE_SCREEN, 10, 1, 3),
-    LASER_CUTTER("LaserCutter", MaterialType.STEEL, 1, MaterialType.SCOOTER_FRAME, 20, 1, 3),
-    PLASTIC_MOLDER("PlasticMolder", MaterialType.PLASTIC, 1, MaterialType.PLASTIC_GUARD, 15, 2, 2),
-    CASE_MAKER("CaseMaker", MaterialType.ELECTRONICS, 1, MaterialType.PHONE_BODY, 18, 2, 2),
+    GLASS_CUTTER("GlassCutter", List.of(MaterialType.GLASS), MaterialType.PHONE_SCREEN, 10, 1, 3, 4, 5),
+    LASER_CUTTER("LaserCutter", List.of(MaterialType.STEEL), MaterialType.SCOOTER_FRAME, 20, 1, 3, 3, 7),
+    PLASTIC_MOLDER("PlasticMolder", List.of(MaterialType.PLASTIC), MaterialType.PLASTIC_GUARD, 15, 2, 2, 3, 3),
+    CASE_MAKER("CaseMaker", List.of(MaterialType.ELECTRONICS), MaterialType.PHONE_BODY, 18, 2, 2, 4, 6),
     ;
 
     public final String name;
-    public final MaterialType input;
-    public final int inQuantity;
-    public final MaterialType output;
+    public final List<MaterialType> recipe;
+    public final MaterialType outputType;
     public final int electricity;
     public final int oil;
     public final int priority;
+    public final int processDuration;
+    public final double wearPerTick;
 
-    MachineConfig(String name, MaterialType input, int inQuantity, MaterialType output, int electricity, int oil, int priority) {
+
+    MachineConfig(String name, List<MaterialType> recipe, MaterialType outputType, int electricity, int oil, int priority, int processDuration, double wearPerTick) {
         this.name = name;
-        this.input = input;
-        this.output = output;
+        this.recipe = recipe;
+        this.outputType = outputType;
         this.electricity = electricity;
         this.oil = oil;
         this.priority = priority;
-        this.inQuantity = inQuantity;
+        this.processDuration = processDuration;
+        this.wearPerTick = wearPerTick;
     }
 }

@@ -1,14 +1,24 @@
 package model.devices;
 
 import lombok.Getter;
+import lombok.Setter;
 import model.devices.state.IdleState;
 import model.devices.state.State;
 import model.inspection.Visitor;
 import model.material.Material;
-@Getter
+import model.material.MaterialType;
 
+import java.util.List;
+
+@Getter
+@Setter
 public abstract class Workforce {
-    State state;
+    protected State state;
+    protected String name;
+    protected List<MaterialType> recipe;
+    protected List<Material> inputBuffer;
+    protected Material outputBuffer;
+    protected int currentProgress = 0;
 
     public Workforce() {
         this.state = new IdleState();
@@ -16,5 +26,11 @@ public abstract class Workforce {
 
     public abstract void acceptVisitor(Visitor v);
 
-    public abstract Material process(Material current);
+    public abstract void tick();
+
+    public abstract Material takeOutput();
+
+    public abstract boolean acceptInput(List<Material> material);
+
+    public abstract void finishWork();
 }

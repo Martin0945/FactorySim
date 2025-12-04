@@ -2,15 +2,11 @@ package app.service;
 
 import event.EventBus;
 import model.devices.Workforce;
-import model.devices.human.EUIWorker;
-import model.devices.human.WheelAssembler;
 import model.devices.human.Worker;
-import model.devices.human.WorkerType;
+import model.devices.human.WorkerFactory;
 import model.devices.machine.*;
-import model.devices.robot.AssemblyRobot;
-import model.devices.robot.PaintRobot;
 import model.devices.robot.Robot;
-import model.devices.robot.RobotType;
+import model.devices.robot.RobotFactory;
 import model.factory.Factory;
 import model.material.Material;
 import model.material.MaterialType;
@@ -34,25 +30,28 @@ public class SimulationService {
     public SimulationService() {
         EventBus eventBus = new EventBus();
         MachineFactory machineFactory = new MachineFactory(eventBus);
+        RobotFactory robotFactory = new RobotFactory(eventBus);
+        WorkerFactory workerFactory = new WorkerFactory(eventBus);
+
         List<Workforce> workforcesA = List.of(
                 machineFactory.createMachine("LaserCutter"),
                 machineFactory.createMachine("PlasticMolder"),
-                new AssemblyRobot(),
-                new PaintRobot(),
-                new EUIWorker(),
-                new WheelAssembler()
+                robotFactory.createRobot("AssemblyRobot"),
+                robotFactory.createRobot("PaintRobotSC"),
+                workerFactory.createWorker("EUI"),
+                workerFactory.createWorker("WheelAssembler")
         );
 
         List<Workforce> workforcesB = List.of(
                 machineFactory.createMachine("GlassCutter"),
                 machineFactory.createMachine("CaseMaker"),
-                new AssemblyRobot(),
-                new PaintRobot(),
-                new EUIWorker()
-        );
+                robotFactory.createRobot("AssemblyRobot"),
+                robotFactory.createRobot("PaintRobotPhone"),
+                workerFactory.createWorker("EUI")
+                );
 
-        this.lineA = new ProductionLine("Line A", workforcesA);
-        this.lineB = new ProductionLine("Line B", workforcesB);
+        this.lineA = new ProductionLine("Line Scooter", workforcesA, MaterialType.PAINTED_SCOOTER);
+        this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
 
         Factory factory = new Factory("Factory one", List.of(lineA, lineB));
 
@@ -68,13 +67,13 @@ public class SimulationService {
 
         this.engine = new SimulationEngine(factory, repairManager, eventBus);
 
-        //add input some
-        lineA.addInput(new Material(MaterialType.STEEL, 1));
-        lineA.addInput(new Material(MaterialType.PLASTIC, 2));
-        lineA.addInput(new Material(MaterialType.RUBBER, 1));
-        lineA.addInput(new Material(MaterialType.ELECTRONICS, 1));
-        lineA.addInput(new Material(MaterialType.PAINT, 1));
-
+        for(int i = 0; i < 6; i++){
+            lineA.addInput(new Material(MaterialType.STEEL));
+            lineA.addInput(new Material(MaterialType.PLASTIC));
+            lineA.addInput(new Material(MaterialType.RUBBER));
+            lineA.addInput(new Material(MaterialType.ELECTRONICS));
+            lineA.addInput(new Material(MaterialType.PAINT));
+        }
 
         eventBus.setUiListener(event -> {
             try {
@@ -87,7 +86,10 @@ public class SimulationService {
 
     public String tick() {
         engine.runTick();
-        return "Tick " + engine.getCurrentTick() + " done. Outputs: " + lineA.getOutputs().size();
+        return String.format("Tick %d done. LineA outputs: %d, Storage size: %d",
+                engine.getCurrentTick(),
+                lineA.getOutputs().size(),
+                lineA.getLineStorageCount());
     }
 
     public Object getFactoryState() {

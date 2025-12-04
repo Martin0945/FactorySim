@@ -1,63 +1,68 @@
 package model.production;
 
 import lombok.Getter;
-import model.devices.Station;
+import lombok.extern.java.Log;
 import model.devices.Workforce;
+import model.devices.machine.Machine;
 import model.material.Material;
+import model.material.MaterialType;
 import simulation.Simulatable;
 import simulation.SimulationContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log
 public class ProductionLine implements Simulatable {
     private String name;
     private List<Workforce> workforces;
-    private final List<Material> buffers;
+
+    private final List<Material> lineStorage = new ArrayList<>();
+    private final MaterialType targetOutput;
+
     @Getter
     private final List<Material> outputs = new ArrayList<>();
 
-    public ProductionLine(String name, List<Workforce> workforces) {
+    public ProductionLine(String name, List<Workforce> workforces, MaterialType targetOutput) {
         this.name = name;
         this.workforces = workforces;
-        this.buffers = new ArrayList<>();
-        workforces.forEach(w -> buffers.add(null));
+        this.targetOutput = targetOutput;
     }
 
-    //put material into first station buffer
     public void addInput(Material material) {
-        buffers.set(0, material);
+        lineStorage.add(material);
+        log.info(name + ": Added input " + material.getType());
     }
 
     @Override
     public void onTick(SimulationContext context) {
-        for (int i = workforces.size() - 1; i >= 0; i--) {
-            Material current = buffers.get(i);
-            if (current == null) continue;
+        workforces.forEach(Workforce::tick);
 
-            //process current material
-            Material processed = workforces.get(i).process(current);
-            //if processing failed for whatever reason
-            if (processed == null || processed == current) {
-                buffers.set(i, current);
-                continue;
+        for (Workforce w : workforces) {
+            Material product = w.takeOutput();
+
+            if (product != null) {
+                if (product.getType() == targetOutput) {
+                    outputs.add(product);
+                    log.info("ProductionLine %s FINISHED: %s".formatted(this.name, product.getType()));
+                    //event
+                } else {
+                    lineStorage.add(product);
+                    log.info(name + ": Machine " + w.getName() + " produced " + product.getType() + " -> returned to storage.");
+                }
             }
-            //if this is last station, store output
-            if (i == workforces.size() - 1) {
-                outputs.add(processed);
-            }
-            else {
-                //move to next station if empty
-               if (buffers.get(i + 1) == null) {
-                    buffers.set(i + 1, processed);
-                    buffers.set(i, null);
-               }
-               //else wait for next tick
-               else {
-                   buffers.set(i, processed);
-               }
+        }
+
+        for (Workforce w : workforces) {
+            boolean startedWorking = w.acceptInput(lineStorage);
+
+            if (startedWorking) {
+                log.info(name + ": Machine " + w.getName() + " took ingredients and started working.");
             }
         }
     }
 
+    public int getLineStorageCount() {
+        return lineStorage.size();
+    }
 }

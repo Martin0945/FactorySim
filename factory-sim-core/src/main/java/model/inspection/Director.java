@@ -12,10 +12,10 @@ public class Director implements Visitor {
 
     @Override
     public void visit(Robot r){
-        System.out.println("Report from director: robot %s in in state %s".formatted(r.getRobotType(), r.getState()));
+        //System.out.println("Report from director: robot %s in in state %s".formatted(r.getRobotType(), r.getState()));
     }
 
     public void visit(Worker w){
-        System.out.println("Report from director: worker %s in in state %s".formatted(w.getWorkerType(), w.getState()));
+        //System.out.println("Report from director: worker %s in in state %s".formatted(w.getWorkerType(), w.getState()));
     }
 }

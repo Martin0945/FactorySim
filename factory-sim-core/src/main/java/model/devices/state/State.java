@@ -2,21 +2,26 @@ package model.devices.state;
 
 import event.Event;
 import event.EventType;
+import model.devices.Station;
+import model.devices.Workforce;
+import model.devices.human.Worker;
 import model.devices.machine.Machine;
 import model.material.Material;
 
+import java.util.List;
+
 public interface State {
     Material process(Machine machine, Material material);
-    void increaseWear(Machine machine);
+
+    void increaseWear(Station station);
+
     String getState();
 
-    static void CheckWear(Machine machine) {
-        if (machine.getWear() >= machine.getBreakThreshold()) {
-            machine.setState(new BrokenState());
-            if (machine.getEventBus() != null) {
-                machine.getEventBus().publish(new Event(EventType.BREAKDOWN, machine, machine.getPriority()));
-            }
-            System.out.println("Machine " + machine.getName() + " broke, wear " + machine.getWear() + "%");
-        }
-    }
+    State checkWear(Station station);
+
+    State acceptInput(Workforce workforce, List<Material> materials);
+
+    State handleTick(Station station);
+
+    State handleTick(Worker worker);
 }

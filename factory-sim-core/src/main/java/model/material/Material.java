@@ -1,14 +1,14 @@
 package model.material;
 
 import lombok.Getter;
+import lombok.ToString;
 
+@ToString
+@Getter
 public class Material {
-    @Getter
-    private MaterialType type;
-    private int quantity;
+    private final MaterialType type;
 
-    public Material(MaterialType type, int quantity) {
+    public Material(MaterialType type) {
         this.type = type;
-        this.quantity = quantity;
     }
 }

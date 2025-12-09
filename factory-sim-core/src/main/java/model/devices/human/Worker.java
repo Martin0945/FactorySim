@@ -2,6 +2,7 @@ package model.devices.human;
 
 import event.EventBus;
 import lombok.Getter;
+import lombok.extern.java.Log;
 import model.devices.Workforce;
 import model.devices.state.IdleState;
 import model.devices.state.State;
@@ -12,6 +13,7 @@ import model.material.MaterialType;
 import java.util.List;
 
 @Getter
+@Log
 
 public class Worker extends Workforce {
     private final int pay;
@@ -61,7 +63,8 @@ public class Worker extends Workforce {
         this.outputBuffer = new Material(this.outputType);
         inputBuffer = null;
 
-        System.out.printf("Finished work at machine %s, output is: %s%n", this.getName(), this.outputBuffer.toString());
+        log.info("Worker %s FINISHED: %s".formatted(this.name, this.outputType));
+
     }
 
     public Material takeOutput() {

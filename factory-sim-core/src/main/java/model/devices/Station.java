@@ -36,7 +36,6 @@ public abstract class Station extends Workforce {
 
         if(getInputBuffer() == null && getOutputBuffer() == null){
             this.state = state.acceptInput(this, materials);
-            return true;
         }
 
         return !this.state.getClass().equals(oldState.getClass());

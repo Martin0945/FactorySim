@@ -24,4 +24,5 @@ public interface State {
     State handleTick(Station station);
 
     State handleTick(Worker worker);
+
 }

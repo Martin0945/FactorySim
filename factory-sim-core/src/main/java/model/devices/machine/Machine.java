@@ -3,6 +3,7 @@ package model.devices.machine;
 import event.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.state.IdleState;
 import model.inspection.Visitor;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Log
 public class Machine extends Station {
     private final int oil;
     private final MaterialType outputType;
@@ -39,10 +41,9 @@ public class Machine extends Station {
         this.setOutputBuffer(new Material(this.outputType));
         this.setInputBuffer(null);
 
-        System.out.printf("Finished work at machine %s, output is: %s%n", this.getName(), this.getOutputBuffer().getType());
+        log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));
 
-        // event
-        this.setState(this.getState().checkWear(this));
+        //todo event
     }
 
     @Override

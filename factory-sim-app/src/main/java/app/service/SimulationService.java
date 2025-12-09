@@ -24,7 +24,7 @@ public class SimulationService {
 
     private final SimulationEngine engine;
     private final ProductionLine lineA;
-    private final ProductionLine lineB;
+    //private final ProductionLine lineB;
     private SseEmitter emitter;
 
     public SimulationService() {
@@ -42,18 +42,18 @@ public class SimulationService {
                 workerFactory.createWorker("WheelAssembler")
         );
 
-        List<Workforce> workforcesB = List.of(
-                machineFactory.createMachine("GlassCutter"),
-                machineFactory.createMachine("CaseMaker"),
-                robotFactory.createRobot("AssemblyRobot"),
-                robotFactory.createRobot("PaintRobotPhone"),
-                workerFactory.createWorker("EUI")
-                );
+//        List<Workforce> workforcesB = List.of(
+//                machineFactory.createMachine("GlassCutter"),
+//                machineFactory.createMachine("CaseMaker"),
+//                robotFactory.createRobot("AssemblyRobot"),
+//                robotFactory.createRobot("PaintRobotPhone"),
+//                workerFactory.createWorker("EUI")
+//                );
 
         this.lineA = new ProductionLine("Line Scooter", workforcesA, MaterialType.PAINTED_SCOOTER);
-        this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
+        //this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
 
-        Factory factory = new Factory("Factory one", List.of(lineA, lineB));
+        Factory factory = new Factory("Factory one", List.of(lineA));
 
 
         RepairTechPool pool = new RepairTechPool(

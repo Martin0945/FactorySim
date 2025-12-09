@@ -5,6 +5,7 @@ import event.EventBus;
 import event.EventType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.state.IdleState;
 import model.inspection.Visitor;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Log
 public class Robot extends Station {
 
     private final MaterialType outputType;
@@ -41,9 +43,7 @@ public class Robot extends Station {
 
         this.setInputBuffer(null);
 
-        System.out.printf("Robot %s finished task. Output: %s%n", this.getName(), this.outputType);
-
-        state = state.checkWear(this);
+        log.info("Robot %s FINISHED: %s".formatted(this.name, this.outputType));
         //event
 
     }

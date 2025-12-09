@@ -41,7 +41,7 @@ public class WorkingState implements State {
 
         if (station.getCurrentProgress() >= station.getProcessDuration()){
             station.finishWork();
-            return new IdleState();
+            return checkWear(station);
         }
         return this;
     }
@@ -75,7 +75,7 @@ public class WorkingState implements State {
 
     @Override
     public void increaseWear(Station station) {
-        station.setWear(station.getWear() + station.getWearPerTick());
+        station.setWear((station.getWear() + station.getWearPerTick()) * (Math.random() - 0.5));
     }
 
     @Override

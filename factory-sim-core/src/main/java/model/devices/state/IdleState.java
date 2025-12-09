@@ -2,6 +2,7 @@ package model.devices.state;
 
 import event.Event;
 import event.EventType;
+import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.Workforce;
 import model.devices.human.Worker;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Log
 public class IdleState implements State {
 
     @Override
@@ -48,7 +50,7 @@ public class IdleState implements State {
     @Override
     public State handleTick(Station station){
         increaseWear(station);
-        return this;
+        return checkWear(station);
     }
 
     public State handleTick(Worker worker){
@@ -75,7 +77,7 @@ public class IdleState implements State {
 
     @Override
     public void increaseWear(Station station) {
-        station.setWear(station.getWear() + station.getWearPerTick() / 2);  //slower wear when idle
+        station.setWear(((station.getWear() + station.getWearPerTick()) * (Math.random() - 0.5)) / 2);  //slower wear when idle
     }
 
 

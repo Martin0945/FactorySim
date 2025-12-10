@@ -2,9 +2,12 @@ package simulation;
 
 import event.*;
 import event.EventListener;
+import lombok.extern.java.Log;
 import model.devices.Station;
 
 import java.util.*;
+
+@Log
 
 public class RepairManager implements EventListener, Simulatable {
     private final PriorityQueue<Station> repairQueue = new PriorityQueue<>(Comparator.comparingInt(Station::getPriority).reversed());
@@ -26,7 +29,7 @@ public class RepairManager implements EventListener, Simulatable {
         Station station = (Station) event.getSource();
         if (!repairQueue.contains(station)) {
             repairQueue.add(station);
-            System.out.println("added to repair queue: " + station.getName());
+            log.info("%s added to repair queue.".formatted(station.getName()));
         }
     }
 

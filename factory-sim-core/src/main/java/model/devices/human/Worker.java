@@ -48,7 +48,6 @@ public class Worker extends Workforce {
         if(inputBuffer == null && outputBuffer == null){
 
             state = state.acceptInput(this, materials);
-            return true;
         }
 
         return !this.state.getClass().equals(oldState.getClass());

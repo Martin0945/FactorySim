@@ -49,8 +49,8 @@ public class Machine extends Station {
     @Override
     public void repair() {
         this.setWear(0);
-        this.setState(new IdleState());
-        System.out.println("Repaired " + this.getName());
+        state = state.checkWear(this);
+        log.info("Machine %s was repaired/serviced.".formatted(this.getName()));
     }
 
     @Override

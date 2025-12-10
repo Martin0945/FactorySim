@@ -52,8 +52,8 @@ public class Robot extends Station {
     @Override
     public void repair() {
         this.setWear(0);
-        this.setState(new IdleState());
-        System.out.println("Robot " + this.getName() + " was repaired/serviced.");
+        state = state.checkWear(this);
+        log.info("Robot %s was repaired/serviced.".formatted(this.getName()));
     }
 
     @Override

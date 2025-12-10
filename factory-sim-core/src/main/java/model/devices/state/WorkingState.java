@@ -65,7 +65,7 @@ public class WorkingState implements State {
             if (station.getEventBus() != null) {
                 station.getEventBus().publish(new Event(EventType.BREAKDOWN, station, station.getPriority()));
             }
-            System.out.println("Machine " + station.getName() + " broke, wear " + station.getWear() + "%");
+            log.info("%s broke down. Wear = %f%%".formatted(station.getName(), station.getWear()));
             return new BrokenState();
         }
         if(station.getInputBuffer() != null){

@@ -36,7 +36,8 @@ public class ProductionLine implements Simulatable {
 
     @Override
     public void onTick(SimulationContext context) {
-        System.out.printf("=================TICK: %d ================%n", context.getCurrentTick());
+        log.info("=================TICK: %d ================%n".formatted(context.getCurrentTick()));
+
         workforces.forEach(Workforce::tick);
 
         for (Workforce w : workforces) {
@@ -45,7 +46,7 @@ public class ProductionLine implements Simulatable {
             if (product != null) {
                 if (product.getType() == targetOutput) {
                     outputs.add(product);
-                    log.info("ProductionLine %s FINISHED: %s".formatted(this.name, product.getType()));
+                    log.info("%s FINISHED: %s".formatted(this.name, product.getType()));
                     //todo event
                 } else {
                     lineStorage.add(product);
@@ -57,7 +58,7 @@ public class ProductionLine implements Simulatable {
             boolean startedWorking = w.acceptInput(lineStorage);
 
             if (startedWorking) {
-                log.info(name + ": Machine " + w.getName() + " took ingredients and started working.");
+                log.info("%s: %s took ingredients and started working.".formatted(name, w.getName()));
             }
         }
     }

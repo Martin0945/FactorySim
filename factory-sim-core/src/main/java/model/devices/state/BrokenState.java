@@ -16,8 +16,11 @@ public class BrokenState implements State {
 
     @Override
     public State checkWear(Station station) {
-        log.info("Machine already broken");
-        return this;
+        if(station.getWear() >= station.getBreakThreshold()) {
+            log.info("Station %s is already broken ".formatted(station.getName()));
+            return this;
+        }
+        return new IdleState();
     }
 
     @Override
@@ -28,7 +31,7 @@ public class BrokenState implements State {
 
     @Override
     public void increaseWear(Station station) {
-        log.info("Machine already broken, cannot increase wear");
+        log.info("%s already broken, cannot increase wear".formatted(station.getName()));
         //do nothing
     }
 
@@ -38,7 +41,7 @@ public class BrokenState implements State {
     }
 
     public State acceptInput(Workforce workforce, List<Material> materials) {
-        log.info("Machine is broken, cannot accept input");
+        log.info("%s is broken, cannot accept input".formatted(workforce.getName()));
         return this;
     }
 

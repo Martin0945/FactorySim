@@ -33,6 +33,7 @@ public class IdleState implements State {
                 }
             }
             if(found != null) {
+                //debug log.info(workforce.getName()+ "found material:" + found);
                 foundMaterials.add(found);
                 tempAvailable.remove(found);
             }else{
@@ -63,7 +64,7 @@ public class IdleState implements State {
             if (station.getEventBus() != null) {
                 station.getEventBus().publish(new Event(EventType.BREAKDOWN, station, station.getPriority()));
             }
-            System.out.println("Machine " + station.getName() + " broke, wear " + station.getWear() + "%");
+            log.info("%s has broke down. Wear = %f%%".formatted(station.getName(), station.getWear()));
             return new BrokenState();
         }
         return this;

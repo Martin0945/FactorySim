@@ -29,6 +29,7 @@ public class Robot extends Station {
         this.setWearPerTick(wearPerTick);
         this.setPriority(priority);
         this.setProcessDuration(processDuration);
+        this.setBreakThreshold(70.0);
         this.setEventBus(eventBus);
         this.setRecipe(recipe);
 

@@ -76,12 +76,16 @@ public class SimulationService {
         }
 
         eventBus.setUiListener(event -> {
+            SseEmitter current = this.emitter;
+            if (current == null) return;   // no active client
             try {
-                emitter.send(event, MediaType.APPLICATION_JSON);
-            } catch (Exception e) {
-                emitter = null; //disconnected client
+                current.send(event, MediaType.APPLICATION_JSON);
+            }
+            catch (Exception e) {
+                this.emitter = null;       // client disconnected
             }
         });
+
     }
 
     public String tick() {
@@ -97,9 +101,13 @@ public class SimulationService {
     }
 
     public SseEmitter createEventStream() {
-        emitter = new SseEmitter(0L);
-        emitter.onCompletion(() -> emitter = null);
-        emitter.onTimeout(() -> emitter = null);
-        return emitter;
+        SseEmitter newEmitter = new SseEmitter(0L);
+        this.emitter = newEmitter;
+        newEmitter.onCompletion(() -> this.emitter = null);
+        newEmitter.onTimeout(() -> this.emitter = null);
+        newEmitter.onError((err) -> this.emitter = null);
+
+        return newEmitter;
     }
+
 }

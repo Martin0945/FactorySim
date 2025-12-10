@@ -1,6 +1,8 @@
 package app.service;
 
+import event.Event;
 import event.EventBus;
+import model.devices.Station;
 import model.devices.Workforce;
 import model.devices.human.Worker;
 import model.devices.human.WorkerFactory;
@@ -17,7 +19,9 @@ import simulation.*;
 import org.springframework.stereotype.Service;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SimulationService {
@@ -75,17 +79,35 @@ public class SimulationService {
             lineA.addInput(new Material(MaterialType.PAINT));
         }
 
+
         eventBus.setUiListener(event -> {
-            SseEmitter current = this.emitter;
-            if (current == null) return;   // no active client
+            if (emitter == null) return;
             try {
-                current.send(event, MediaType.APPLICATION_JSON);
-            }
-            catch (Exception e) {
-                this.emitter = null;       // client disconnected
+                emitter.send(buildEventPayload(event), MediaType.APPLICATION_JSON);
+            } catch (Exception e) {
+                emitter = null; // disconnected client
             }
         });
 
+
+    }
+
+    private Map<String, Object> buildEventPayload(Event event) {
+        Map<String, Object> payload = new HashMap<>();
+        String sourceName = "";
+        Object src = event.getSource();
+        if (src instanceof Station) {
+            sourceName = ((Station) src).getName();
+        } else {
+            sourceName = src.getClass().getSimpleName();
+        }
+        String message = String.format("[%s] %s sent event [%s]", src.getClass().getSimpleName(), sourceName, event.getType().name());
+        payload.put("message", message);
+        payload.put("type", event.getType().name());
+        payload.put("sourceClass", src.getClass().getSimpleName());
+        payload.put("sourceName", sourceName);
+        payload.put("priority", event.getPriority());
+        return payload;
     }
 
     public String tick() {

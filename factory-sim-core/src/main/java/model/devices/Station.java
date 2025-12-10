@@ -52,6 +52,5 @@ public abstract class Station extends Workforce {
     }
 
     public abstract void finishWork();
-    protected abstract void increaseWear();
     public abstract void repair();
 }

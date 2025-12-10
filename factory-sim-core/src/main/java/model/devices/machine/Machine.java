@@ -47,11 +47,6 @@ public class Machine extends Station {
     }
 
     @Override
-    protected void increaseWear() {
-        this.setWear(this.getWear() + this.getWearPerTick());
-    }
-
-    @Override
     public void repair() {
         this.setWear(0);
         this.setState(new IdleState());

@@ -11,6 +11,8 @@ import model.material.Material;
 
 import java.util.List;
 
+import static java.lang.Math.abs;
+
 @Log
 public class WorkingState implements State {
 
@@ -75,7 +77,7 @@ public class WorkingState implements State {
 
     @Override
     public void increaseWear(Station station) {
-        station.setWear((station.getWear() + station.getWearPerTick()) * (Math.random() - 0.5));
+        station.setWear(station.getWear() + (station.getWearPerTick() * (Math.random() + 0.5)));  //between 0.5x and 1.5x the normal wear
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.Setter;
 import java.util.*;
 import java.util.function.Consumer;
 
+
 public class EventBus {
 
     private final Map<EventType, List<EventListener>> listeners = new HashMap<>();
@@ -35,4 +36,6 @@ public class EventBus {
             }
         }
     }
+
+
 }

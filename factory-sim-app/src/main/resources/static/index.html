@@ -83,7 +83,7 @@
         const ev = JSON.parse(e.data);
         const log = document.getElementById("log");
         const line = document.createElement("div");
-        line.textContent = `[${ev.type}] ${JSON.stringify(ev.data)}`;
+        line.textContent = ev.message;
         log.appendChild(line);
         log.scrollTop = log.scrollHeight;
     };

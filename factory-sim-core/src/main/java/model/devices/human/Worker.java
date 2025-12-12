@@ -6,6 +6,7 @@ import lombok.extern.java.Log;
 import model.devices.Workforce;
 import model.devices.state.IdleState;
 import model.devices.state.State;
+import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -20,7 +21,6 @@ public class Worker extends Workforce {
     private final int priority;
     private final EventBus eventBus;
     private final MaterialType outputType;
-    private final int processDuration;
 
     public Worker(int pay, int priority, EventBus eventBus, MaterialType outputType,
                   int processDuration, List<MaterialType> recipe, String name) {
@@ -29,16 +29,16 @@ public class Worker extends Workforce {
         this.priority = priority;
         this.eventBus = eventBus;
         this.outputType = outputType;
-        this.processDuration = processDuration;
 
+        this.setProcessDuration(processDuration);
         this.setName(name);
         this.setRecipe(recipe);
 
     }
 
     @Override
-    public void acceptVisitor(Visitor v) {
-        v.visit(this);
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Worker extends Workforce {
         this.outputBuffer = new Material(this.outputType);
         inputBuffer = null;
 
-        log.info("Worker %s FINISHED: %s".formatted(this.name, this.outputType));
+        //log.info("Worker %s FINISHED: %s".formatted(this.name, this.outputType));
 
     }
 

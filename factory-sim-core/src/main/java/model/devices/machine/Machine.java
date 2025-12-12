@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.state.IdleState;
+import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -34,6 +35,7 @@ public class Machine extends Station {
         this.setBreakThreshold(80.0);
         this.setName(name);
         this.setRecipe(recipe);
+        this.setProcessDuration(processDuration);
     }
 
     @Override
@@ -41,7 +43,7 @@ public class Machine extends Station {
         this.setOutputBuffer(new Material(this.outputType));
         this.setInputBuffer(null);
 
-        log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));
+        //log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));
 
         //todo event
     }
@@ -54,7 +56,7 @@ public class Machine extends Station {
     }
 
     @Override
-    public void acceptVisitor(Visitor v) {
-        //v.visit(this);
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 }

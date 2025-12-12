@@ -8,7 +8,7 @@ public enum MachineConfig {
     GLASS_CUTTER("GlassCutter", List.of(MaterialType.GLASS), MaterialType.PHONE_SCREEN, 10, 1, 3, 4, 5),
     LASER_CUTTER("LaserCutter", List.of(MaterialType.STEEL), MaterialType.SCOOTER_FRAME, 20, 1, 3, 3, 7),
     PLASTIC_MOLDER("PlasticMolder", List.of(MaterialType.PLASTIC), MaterialType.PLASTIC_GUARD, 15, 2, 2, 3, 3),
-    CASE_MAKER("CaseMaker", List.of(MaterialType.ELECTRONICS), MaterialType.PHONE_BODY, 18, 2, 2, 4, 6),
+    CASE_MAKER("CaseMaker", List.of(MaterialType.STEEL), MaterialType.PHONE_BODY, 18, 2, 2, 4, 6),
     ;
 
     public final String name;

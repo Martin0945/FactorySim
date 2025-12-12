@@ -10,6 +10,7 @@ import model.devices.machine.*;
 import model.devices.robot.Robot;
 import model.devices.robot.RobotFactory;
 import model.factory.Factory;
+import model.inspection.VisitorManager;
 import model.material.Material;
 import model.material.MaterialType;
 import model.production.*;
@@ -28,7 +29,7 @@ public class SimulationService {
 
     private final SimulationEngine engine;
     private final ProductionLine lineA;
-    //private final ProductionLine lineB;
+    private final ProductionLine lineB;
     private SseEmitter emitter;
 
     public SimulationService() {
@@ -40,25 +41,26 @@ public class SimulationService {
         List<Workforce> workforcesA = List.of(
                 machineFactory.createMachine("LaserCutter"),
                 machineFactory.createMachine("PlasticMolder"),
-                robotFactory.createRobot("AssemblyRobot"),
+                robotFactory.createRobot("AssemblyRobotSC"),
                 robotFactory.createRobot("PaintRobotSC"),
                 workerFactory.createWorker("EUI"),
                 workerFactory.createWorker("WheelAssembler")
         );
 
-//        List<Workforce> workforcesB = List.of(
-//                machineFactory.createMachine("GlassCutter"),
-//                machineFactory.createMachine("CaseMaker"),
-//                robotFactory.createRobot("AssemblyRobot"),
-//                robotFactory.createRobot("PaintRobotPhone"),
-//                workerFactory.createWorker("EUI")
-//                );
+        List<Workforce> workforcesB = List.of(
+                machineFactory.createMachine("GlassCutter"),
+                machineFactory.createMachine("CaseMaker"),
+                robotFactory.createRobot("AssemblyRobotPhone"),
+                robotFactory.createRobot("PaintRobotPhone"),
+                workerFactory.createWorker("EUI")
+                );
 
         this.lineA = new ProductionLine("Line Scooter", workforcesA, MaterialType.PAINTED_SCOOTER);
-        //this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
+        this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
 
-        Factory factory = new Factory("Factory one", List.of(lineA));
+        Factory factory = new Factory("Factory one", List.of(lineA, lineB));
 
+        new VisitorManager(factory, eventBus);
 
         RepairTechPool pool = new RepairTechPool(
                 List.of(
@@ -77,6 +79,10 @@ public class SimulationService {
             lineA.addInput(new Material(MaterialType.RUBBER));
             lineA.addInput(new Material(MaterialType.ELECTRONICS));
             lineA.addInput(new Material(MaterialType.PAINT));
+            lineB.addInput(new Material(MaterialType.GLASS));
+            lineB.addInput(new Material(MaterialType.STEEL));
+            lineB.addInput(new Material(MaterialType.ELECTRONICS));
+            lineB.addInput(new Material(MaterialType.PAINT));
         }
 
 

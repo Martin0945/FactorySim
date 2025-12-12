@@ -45,6 +45,15 @@ public class BrokenState implements State {
         return this;
     }
 
+    public String getDirectorReport(Workforce w) {
+        return "is broken!";
+    }
+
+    @Override
+    public Boolean isWorking(Workforce workforce){
+        return false;
+    }
+
     @Override
     public State handleTick(Station station) {
         //repair logic

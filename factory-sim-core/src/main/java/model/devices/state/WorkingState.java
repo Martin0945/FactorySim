@@ -81,6 +81,17 @@ public class WorkingState implements State {
     }
 
     @Override
+    public String getDirectorReport(Workforce w){
+        return "is %d/%d done with current job."
+                .formatted(w.getCurrentProgress(), w.getProcessDuration());
+    }
+
+    @Override
+    public Boolean isWorking(Workforce workforce){
+        return true;
+    }
+
+    @Override
     public String getState() {
         return "Working";
     }

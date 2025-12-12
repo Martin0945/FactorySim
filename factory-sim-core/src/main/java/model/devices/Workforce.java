@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import model.devices.state.IdleState;
 import model.devices.state.State;
+import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -19,12 +20,14 @@ public abstract class Workforce {
     protected List<Material> inputBuffer;
     protected Material outputBuffer;
     protected int currentProgress = 0;
+    private int processDuration;
+
 
     public Workforce() {
         this.state = new IdleState();
     }
 
-    public abstract void acceptVisitor(Visitor v);
+    public abstract void acceptVisitor(Visitor visitor);
 
     public abstract void tick();
 

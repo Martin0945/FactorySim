@@ -78,7 +78,24 @@ public class IdleState implements State {
 
     @Override
     public void increaseWear(Station station) {
-        station.setWear(((station.getWear() + station.getWearPerTick()) * (Math.random() - 0.5)) / 2);  //slower wear when idle
+        station.setWear(((station.getWear() + station.getWearPerTick()) * (Math.random() + 0.5)) / 2);  //slower wear when idle
+    }
+
+    @Override
+    public String getDirectorReport(Workforce workforce){
+        if(workforce.getInputBuffer() == null) {
+            return "is not working because input buffer is empty, waiting for %s.".formatted(workforce.getRecipe());
+        }
+        else if(workforce.getOutputBuffer() != null) {
+            return "is not working because output buffer is full, waiting to be emptied.";
+        }else{
+            return "is not working because of unknown circumstances.";
+        }
+    }
+
+    @Override
+    public Boolean isWorking(Workforce workforce){
+        return false;
     }
 
 

@@ -5,8 +5,11 @@ import model.material.MaterialType;
 import java.util.List;
 
 public enum RobotConfig {
-    ASSEMBLY_ROBOT("AssemblyRobot", 12, 4, 1, 6, MaterialType.SCOOTER,
+    ASSEMBLY_ROBOT_SC("AssemblyRobotSC", 12, 4, 1, 6, MaterialType.SCOOTER,
             List.of(MaterialType.SCOOTER_FRAME, MaterialType.PLASTIC_GUARD, MaterialType.WHEEL, MaterialType.CHIPSET)),
+
+    ASSEMBLY_ROBOT_PHONE("AssemblyRobotPhone", 12, 4, 1, 4, MaterialType.PHONE,
+            List.of(MaterialType.PHONE_SCREEN, MaterialType.PHONE_BODY, MaterialType.CHIPSET)),
 
     PAINT_ROBOT_SC("PaintRobotSC", 10, 3, 2, 4, MaterialType.PAINTED_SCOOTER,
             List.of(MaterialType.SCOOTER, MaterialType.PAINT)),

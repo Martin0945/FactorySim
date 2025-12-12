@@ -25,4 +25,7 @@ public interface State {
 
     State handleTick(Worker worker);
 
+    String getDirectorReport(Workforce workforce);
+
+    Boolean isWorking(Workforce workforce);
 }

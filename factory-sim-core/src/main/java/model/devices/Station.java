@@ -17,7 +17,6 @@ public abstract class Station extends Workforce {
     private double breakThreshold;
     private EventBus eventBus;
     private int priority;
-    private int processDuration;
 
     public Station(int electricity) {
         super();

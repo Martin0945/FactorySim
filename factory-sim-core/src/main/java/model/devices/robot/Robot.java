@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.state.IdleState;
+import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -32,6 +33,7 @@ public class Robot extends Station {
         this.setBreakThreshold(70.0);
         this.setEventBus(eventBus);
         this.setRecipe(recipe);
+        this.setProcessDuration(processDuration);
 
         this.outputType = outputType;
 
@@ -44,7 +46,7 @@ public class Robot extends Station {
 
         this.setInputBuffer(null);
 
-        log.info("Robot %s FINISHED: %s".formatted(this.name, this.outputType));
+        //log.info("Robot %s FINISHED: %s".formatted(this.name, this.outputType));
         //event
 
     }
@@ -57,8 +59,8 @@ public class Robot extends Station {
     }
 
     @Override
-    public void acceptVisitor(Visitor v) {
-        v.visit(this);
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 
 }

@@ -1,8 +1,11 @@
 package event;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Getter
 public class Event {
     private final String id = UUID.randomUUID().toString();
     private final EventType type;
@@ -16,9 +19,4 @@ public class Event {
         this.priority = priority;
     }
 
-    public EventType getType() { return type; }
-    public Object getSource() { return source; }
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public String getId() { return id; }
-    public int getPriority() { return priority; }
 }

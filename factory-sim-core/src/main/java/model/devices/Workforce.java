@@ -1,5 +1,6 @@
 package model.devices;
 
+import event.EventBus;
 import lombok.Getter;
 import lombok.Setter;
 import model.devices.state.IdleState;
@@ -21,6 +22,9 @@ public abstract class Workforce {
     protected Material outputBuffer;
     protected int currentProgress = 0;
     private int processDuration;
+    private EventBus eventBus;
+    private MaterialType outputType;
+
 
 
     public Workforce() {

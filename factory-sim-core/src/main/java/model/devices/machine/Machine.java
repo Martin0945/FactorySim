@@ -18,15 +18,14 @@ import java.util.List;
 @Log
 public class Machine extends Station {
     private final int oil;
-    private final MaterialType outputType;
 
     public Machine(int electricity, double wearPerTick, int priority, EventBus eventBus,
                    int oil, MaterialType outputType, int processDuration, String name,
                    List<MaterialType> recipe) {
-        super(electricity);
+        super(electricity, eventBus);
 
         this.oil = oil;
-        this.outputType = outputType;
+        this.setOutputType(outputType);
 
         this.setWearPerTick(wearPerTick);
         this.setPriority(priority);
@@ -40,7 +39,7 @@ public class Machine extends Station {
 
     @Override
     public void finishWork() {
-        this.setOutputBuffer(new Material(this.outputType));
+        this.setOutputBuffer(new Material(this.getOutputType()));
         this.setInputBuffer(null);
 
         //log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));

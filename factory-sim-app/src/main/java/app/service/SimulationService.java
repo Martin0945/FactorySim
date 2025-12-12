@@ -31,12 +31,15 @@ public class SimulationService {
     private final ProductionLine lineA;
     private final ProductionLine lineB;
     private SseEmitter emitter;
+    private final SupplyManager supplyManager;
+
 
     public SimulationService() {
         EventBus eventBus = new EventBus();
         MachineFactory machineFactory = new MachineFactory(eventBus);
         RobotFactory robotFactory = new RobotFactory(eventBus);
         WorkerFactory workerFactory = new WorkerFactory(eventBus);
+
 
         List<Workforce> workforcesA = List.of(
                 machineFactory.createMachine("LaserCutter"),
@@ -53,12 +56,14 @@ public class SimulationService {
                 robotFactory.createRobot("AssemblyRobotPhone"),
                 robotFactory.createRobot("PaintRobotPhone"),
                 workerFactory.createWorker("EUI")
-                );
+        );
 
         this.lineA = new ProductionLine("Line Scooter", workforcesA, MaterialType.PAINTED_SCOOTER);
         this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
 
-        Factory factory = new Factory("Factory one", List.of(lineA, lineB));
+        List<ProductionLine> productionLines = List.of(lineA, lineB);
+
+        Factory factory = new Factory("Factory one", productionLines);
 
         new VisitorManager(factory, eventBus);
 
@@ -68,22 +73,11 @@ public class SimulationService {
                         new RepairTech("Job")
                 )
         );
-
         RepairManager repairManager = new RepairManager(pool, eventBus);
 
+        supplyManager = new SupplyManager(eventBus, productionLines);
         this.engine = new SimulationEngine(factory, repairManager, eventBus);
-
-        for(int i = 0; i < 6; i++){
-            lineA.addInput(new Material(MaterialType.STEEL));
-            lineA.addInput(new Material(MaterialType.PLASTIC));
-            lineA.addInput(new Material(MaterialType.RUBBER));
-            lineA.addInput(new Material(MaterialType.ELECTRONICS));
-            lineA.addInput(new Material(MaterialType.PAINT));
-            lineB.addInput(new Material(MaterialType.GLASS));
-            lineB.addInput(new Material(MaterialType.STEEL));
-            lineB.addInput(new Material(MaterialType.ELECTRONICS));
-            lineB.addInput(new Material(MaterialType.PAINT));
-        }
+        supplyManager.initializeLines();
 
 
         eventBus.setUiListener(event -> {
@@ -118,10 +112,16 @@ public class SimulationService {
 
     public String tick() {
         engine.runTick();
-        return String.format("Tick %d done. LineA outputs: %d, Storage size: %d",
+        return String.format("Tick %d done.%n%s outputs: %d %s size: %d.%n%s outputs: %d, %s size: %d",
                 engine.getCurrentTick(),
+                lineA.getName(),
                 lineA.getOutputs().size(),
-                lineA.getLineStorageCount());
+                lineA.getName(),
+                lineA.getLineStorageCount(),
+                lineB.getName(),
+                lineB.getOutputs().size(),
+                lineB.getName(),
+                lineB.getLineStorageCount());
     }
 
     public Object getFactoryState() {

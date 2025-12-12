@@ -20,7 +20,6 @@ public class Worker extends Workforce {
     private final int pay;
     private final int priority;
     private final EventBus eventBus;
-    private final MaterialType outputType;
 
     public Worker(int pay, int priority, EventBus eventBus, MaterialType outputType,
                   int processDuration, List<MaterialType> recipe, String name) {
@@ -28,11 +27,12 @@ public class Worker extends Workforce {
         this.pay = pay;
         this.priority = priority;
         this.eventBus = eventBus;
-        this.outputType = outputType;
+        this.setOutputType(outputType);
 
         this.setProcessDuration(processDuration);
         this.setName(name);
         this.setRecipe(recipe);
+        this.setEventBus(eventBus);
 
     }
 
@@ -59,7 +59,7 @@ public class Worker extends Workforce {
 
 
     public void finishWork() {
-        this.outputBuffer = new Material(this.outputType);
+        this.outputBuffer = new Material(this.getOutputType());
         inputBuffer = null;
 
         //log.info("Worker %s FINISHED: %s".formatted(this.name, this.outputType));

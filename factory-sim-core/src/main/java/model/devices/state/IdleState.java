@@ -37,6 +37,9 @@ public class IdleState implements State {
                 foundMaterials.add(found);
                 tempAvailable.remove(found);
             }else{
+                if (workforce.getEventBus() != null) {
+                    workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
+                }
                 return this;
             }
         }

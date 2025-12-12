@@ -20,12 +20,11 @@ import java.util.List;
 @Log
 public class Robot extends Station {
 
-    private final MaterialType outputType;
 
     public Robot(String name, int electricity, double wearPerTick, int priority,
                  int processDuration, MaterialType outputType, List<MaterialType> recipe,
                  EventBus eventBus) {
-        super(electricity);
+        super(electricity, eventBus);
         this.setName(name);
         this.setWearPerTick(wearPerTick);
         this.setPriority(priority);
@@ -35,14 +34,14 @@ public class Robot extends Station {
         this.setRecipe(recipe);
         this.setProcessDuration(processDuration);
 
-        this.outputType = outputType;
+        this.setOutputType(outputType);
 
         this.setState(new IdleState());
     }
 
     @Override
     public void finishWork() {
-        this.setOutputBuffer(new Material(this.outputType));
+        this.setOutputBuffer(new Material(this.getOutputType()));
 
         this.setInputBuffer(null);
 

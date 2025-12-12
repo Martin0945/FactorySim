@@ -15,13 +15,13 @@ public abstract class Station extends Workforce {
     private double wear;
     private double wearPerTick;
     private double breakThreshold;
-    private EventBus eventBus;
     private int priority;
 
-    public Station(int electricity) {
+    public Station(int electricity, EventBus eventBus) {
         super();
         this.electricity = electricity;
         this.wear = 0;
+        this.setEventBus(eventBus);
     }
 
     @Override

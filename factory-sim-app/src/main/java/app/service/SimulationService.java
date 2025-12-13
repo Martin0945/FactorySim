@@ -3,15 +3,6 @@ package app.service;
 import event.Event;
 import event.EventBus;
 import model.devices.Station;
-import model.devices.Workforce;
-import model.devices.human.Worker;
-import model.devices.human.WorkerFactory;
-import model.devices.machine.*;
-import model.devices.robot.Robot;
-import model.devices.robot.RobotFactory;
-import model.factory.Factory;
-import model.inspection.VisitorManager;
-import model.material.Material;
 import model.material.MaterialType;
 import model.production.*;
 import org.springframework.http.MediaType;
@@ -34,8 +25,18 @@ public class SimulationService {
     private final SupplyManager supplyManager;
 
 
-    public SimulationService() {
+    public SimulationService(JsonSimulatorLoader jsonLoader) {
         SimulationBuilder builder = new SimulationBuilder();
+
+
+        //JSON loader
+
+        //jsonLoader.loadConfig(builder, "factory_config.json");
+
+        //JSON loader end
+
+
+        //class loader
 
         builder
             .addProductionLine("Line Scooter",List.of(
@@ -45,7 +46,7 @@ public class SimulationService {
                 builder.createRobot("PaintRobotSC"),
                 builder.createWorker("EUI"),
                 builder.createWorker("WheelAssembler"))
-                    ,MaterialType.PAINTED_SCOOTER).
+                    , MaterialType.PAINTED_SCOOTER).
 
             addProductionLine("Line Phone", List.of(
                 builder.createMachine("GlassCutter"),
@@ -57,6 +58,8 @@ public class SimulationService {
 
             addRepairTech("Bob")
             .addRepairTech("Job");
+
+        //class loader end
 
         SimulationRecord simulationRecord = builder.build();
 

@@ -21,8 +21,8 @@ import java.util.List;
 @Getter
 
 public class ProductionLine implements Simulatable {
-    private String name;
-    private List<Workforce> workforces;
+    private final String name;
+    private final List<Workforce> workforces;
 
     private final List<Material> lineStorage = new ArrayList<>();
     private final MaterialType targetOutput;

@@ -23,61 +23,47 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SimulationService {
 
     private final SimulationEngine engine;
-    private final ProductionLine lineA;
-    private final ProductionLine lineB;
+    private final List<ProductionLine> productionLines;
     private SseEmitter emitter;
     private final SupplyManager supplyManager;
 
 
     public SimulationService() {
-        EventBus eventBus = new EventBus();
-        MachineFactory machineFactory = new MachineFactory(eventBus);
-        RobotFactory robotFactory = new RobotFactory(eventBus);
-        WorkerFactory workerFactory = new WorkerFactory(eventBus);
+        SimulationBuilder builder = new SimulationBuilder();
 
+        builder
+            .addProductionLine("Line Scooter",List.of(
+                builder.createMachine("LaserCutter"),
+                builder.createMachine("PlasticMolder"),
+                builder.createRobot("AssemblyRobotSC"),
+                builder.createRobot("PaintRobotSC"),
+                builder.createWorker("EUI"),
+                builder.createWorker("WheelAssembler"))
+                    ,MaterialType.PAINTED_SCOOTER).
 
-        List<Workforce> workforcesA = List.of(
-                machineFactory.createMachine("LaserCutter"),
-                machineFactory.createMachine("PlasticMolder"),
-                robotFactory.createRobot("AssemblyRobotSC"),
-                robotFactory.createRobot("PaintRobotSC"),
-                workerFactory.createWorker("EUI"),
-                workerFactory.createWorker("WheelAssembler")
-        );
+            addProductionLine("Line Phone", List.of(
+                builder.createMachine("GlassCutter"),
+                builder.createMachine("CaseMaker"),
+                builder.createRobot("AssemblyRobotPhone"),
+                builder.createRobot("PaintRobotPhone"),
+                builder.createWorker("EUI")),
+                    MaterialType.PAINTED_PHONE).
 
-        List<Workforce> workforcesB = List.of(
-                machineFactory.createMachine("GlassCutter"),
-                machineFactory.createMachine("CaseMaker"),
-                robotFactory.createRobot("AssemblyRobotPhone"),
-                robotFactory.createRobot("PaintRobotPhone"),
-                workerFactory.createWorker("EUI")
-        );
+            addRepairTech("Bob")
+            .addRepairTech("Job");
 
-        this.lineA = new ProductionLine("Line Scooter", workforcesA, MaterialType.PAINTED_SCOOTER);
-        this.lineB = new ProductionLine("Line Phone", workforcesB, MaterialType.PAINTED_PHONE);
+        SimulationRecord simulationRecord = builder.build();
 
-        List<ProductionLine> productionLines = List.of(lineA, lineB);
-
-        Factory factory = new Factory("Factory one", productionLines);
-
-        new VisitorManager(factory, eventBus);
-
-        RepairTechPool pool = new RepairTechPool(
-                List.of(
-                        new RepairTech("Bob"),
-                        new RepairTech("Job")
-                )
-        );
-        RepairManager repairManager = new RepairManager(pool, eventBus);
-
-        supplyManager = new SupplyManager(eventBus, productionLines);
-        this.engine = new SimulationEngine(factory, repairManager, eventBus);
-        supplyManager.initializeLines();
+        this.engine = simulationRecord.engine();
+        this.supplyManager = simulationRecord.supplyManager();
+        this.productionLines = simulationRecord.lines();
+        EventBus eventBus = simulationRecord.eventBus();
 
 
         eventBus.setUiListener(event -> {
@@ -112,16 +98,11 @@ public class SimulationService {
 
     public String tick() {
         engine.runTick();
-        return String.format("Tick %d done.%n%s outputs: %d %s size: %d.%n%s outputs: %d, %s size: %d",
-                engine.getCurrentTick(),
-                lineA.getName(),
-                lineA.getOutputs().size(),
-                lineA.getName(),
-                lineA.getLineStorageCount(),
-                lineB.getName(),
-                lineB.getOutputs().size(),
-                lineB.getName(),
-                lineB.getLineStorageCount());
+        String report = productionLines.stream()
+                .map(line -> String.format("%s outputs: %d, Storage: %d",
+                        line.getName(), line.getOutputs().size(), line.getLineStorageCount()))
+                .collect(Collectors.joining("\n"));
+        return String.format("Tick %d done.%n%s", engine.getCurrentTick(), report);
     }
 
     public Object getFactoryState() {

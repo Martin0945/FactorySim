@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
 
 @Log
 public class IdleState implements State {
+    private boolean helpRequested = false;
 
     @Override
     public State acceptInput(Workforce workforce, List<Material> materials) {
+
         List<MaterialType> neededMaterials = workforce.getRecipe();
 
         List<Material> foundMaterials = new ArrayList<>();
@@ -38,7 +40,10 @@ public class IdleState implements State {
                 tempAvailable.remove(found);
             }else{
                 if (workforce.getEventBus() != null) {
-                    workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
+                    if(typeNeeded.isRaw() && !helpRequested) {
+                        workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
+                        helpRequested = true;
+                    }
                 }
                 return this;
             }

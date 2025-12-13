@@ -12,6 +12,7 @@ import model.material.MaterialType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Log
 
@@ -22,8 +23,6 @@ public class SupplyManager implements EventListener {
 
     private final List<ProductionLine> allLines;
     private final Map<String, List<MaterialType>> lineRecipes = new HashMap<>();
-
-
 
     public SupplyManager(EventBus eventBus, List<ProductionLine> AllLines) {
         this.allLines = AllLines;
@@ -82,8 +81,8 @@ public class SupplyManager implements EventListener {
 
         for(MaterialType type : recipe) {
             found = false;
-            long currentAmount = countMaterialOnLine(line, type);
 
+            long currentAmount = countMaterialOnLine(line, type);
             long missing = MAX_NUM_OF_MATERIALS - currentAmount;
             long toAdd = Math.min(REFILL_SIZE, Math.max(missing, 0));
 

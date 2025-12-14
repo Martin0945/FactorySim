@@ -16,23 +16,10 @@ public class WorkingState implements State {
 
     @Override
     public State acceptInput(Workforce workforce, List<Material> materials) {
-        log.info("Accepting input: Machine %s is working, state remains the same".formatted(workforce.getName()));
-
+        log.info("Accepting input: Machine %s is working, state remains the same"
+                .formatted(workforce.getName()));
         return this;
     }
-        @Override
-    public Material process(Machine machine, Material material) {
-//        increaseWear(machine);
-//        if(material.getType() == machine.getInput().getType()){
-//            //also probably check quantity here
-//            return machine.getOutput();
-//        }
-//        else{
-//            //probably some failure event here
-//            return material;
-//        }
-        return null;
-       }
 
     @Override
     public State handleTick(Station station){

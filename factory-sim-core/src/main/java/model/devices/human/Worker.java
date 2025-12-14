@@ -60,13 +60,9 @@ public class Worker extends Workforce {
         }
     }
 
-
     public void finishWork() {
         this.outputBuffer = new Material(this.getOutputType());
         inputBuffer = null;
-
-        //log.info("Worker %s FINISHED: %s".formatted(this.name, this.outputType));
-
     }
 
     public Material takeOutput() {

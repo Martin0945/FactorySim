@@ -1,9 +1,6 @@
 package app.service;
 
-import app.dto.ConsumptionReport;
-import app.dto.FactoryConfigReport;
-import app.dto.FactoryStateReport;
-import app.dto.OutagesReport;
+import app.dto.*;
 import event.Event;
 import event.EventBus;
 import model.devices.Station;
@@ -66,7 +63,7 @@ public class SimulationService {
 
         //class loader end
 
-        SimulationRecord simulationRecord = builder.build();
+        SimulationRecord simulationRecord = builder.build("Factory one");
 
         this.engine = simulationRecord.engine();
         this.supplyManager = simulationRecord.supplyManager();

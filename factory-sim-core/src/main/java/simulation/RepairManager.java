@@ -8,6 +8,7 @@ import model.devices.Station;
 import simulation.stats.OutageStats;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Log
 
@@ -17,8 +18,14 @@ public class RepairManager implements EventListener, Simulatable {
     private final RepairTechPool pool;
     private final EventBus eventBus;
     private final Map<RepairTech, Station> activeRepairs = new HashMap<>();
+
     private final int REPAIR_DURATION = 3;      //placeholder
+    private final int MIN_REPAIR_DURATION = 2;
+    private final int MAX_REPAIR_DURATION = 5;
+    private final Map<Station, Integer> totalRepairTimes = new HashMap<>();
+
     private final Map<Station, Integer> remaining = new HashMap<>();
+
     @Getter
     private final OutageStats outageStats = new OutageStats();
 
@@ -42,10 +49,15 @@ public class RepairManager implements EventListener, Simulatable {
     public void onTick(SimulationContext context) {
         //while techs free and machines need fixing, start new repairs
         while (pool.hasAvailable() && !repairQueue.isEmpty()) {
+
+            int duration = ThreadLocalRandom.current().nextInt(MIN_REPAIR_DURATION, MAX_REPAIR_DURATION + 1);
+
             Station m = repairQueue.poll();
             RepairTech tech = pool.acquireTech();
             activeRepairs.put(tech, m);
-            remaining.put(m, REPAIR_DURATION);
+            remaining.put(m, duration);
+            totalRepairTimes.put(m, duration);
+
             publishEvent(EventType.REPAIR_STARTED, m);
         }
         outageStats.recordWaitTime(repairQueue.size());
@@ -63,7 +75,10 @@ public class RepairManager implements EventListener, Simulatable {
             else {
                 s.repair();
                 remaining.remove(s);
-                outageStats.recordOutageDuration(REPAIR_DURATION);
+
+                int actualDuration = totalRepairTimes.remove(s);
+                outageStats.recordOutageDuration(actualDuration);
+
                 publishEvent(EventType.REPAIR_FINISHED, s);
                 it.remove();
                 pool.releaseTech(tech);

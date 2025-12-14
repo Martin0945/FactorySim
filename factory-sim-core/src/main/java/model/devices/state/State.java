@@ -11,8 +11,6 @@ import model.material.Material;
 import java.util.List;
 
 public interface State {
-    Material process(Machine machine, Material material);
-
     void increaseWear(Station station);
 
     String getState();

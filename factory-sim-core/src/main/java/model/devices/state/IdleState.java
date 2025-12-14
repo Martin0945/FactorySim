@@ -78,12 +78,6 @@ public class IdleState implements State {
         return this;
     }
 
-
-    @Override
-    public Material process(Machine machine, Material material) {
-        return null;
-    }
-
     @Override
     public void increaseWear(Station station) {
         station.setWear(((station.getWear() + station.getWearPerTick()) * (Math.random() + 0.5)) / 2);  //slower wear when idle

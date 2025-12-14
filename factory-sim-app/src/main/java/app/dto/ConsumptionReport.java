@@ -3,6 +3,7 @@ package app.dto;
 import model.production.ProductionLine;
 import model.devices.Workforce;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,14 +14,19 @@ public record ConsumptionReport(List<LineConsumption> lineConsumptions,double to
             double lineOil = 0;
             double lineWages = 0;
 
+            List<MachineConsumption> machineDetails = new ArrayList<>();
+
             for (Workforce w : line.getWorkforces()) {
                 var snapshot = w.getConsumption().snapshot();
                 lineElectricity += snapshot.electricity();
                 lineOil += snapshot.oil();
                 lineWages += snapshot.wages();
+
+                machineDetails.add(new MachineConsumption(w.getName(), w.getClass().getSimpleName(),
+                        snapshot.electricity(), snapshot.oil(), snapshot.wages()));
             }
 
-            return new LineConsumption(line.getName(), lineElectricity, lineOil, lineWages);
+            return new LineConsumption(line.getName(), lineElectricity, lineOil, lineWages, machineDetails);
         }).collect(Collectors.toList());
 
         // compute totals separately
@@ -32,5 +38,14 @@ public record ConsumptionReport(List<LineConsumption> lineConsumptions,double to
     }
 
 
-    public record LineConsumption(String lineName, double electricity, double oil, double wages) {}
+    public record LineConsumption(String lineName, double electricity, double oil, double wages,
+                                  List<MachineConsumption> machines) {}
+
+    public record MachineConsumption (
+            String name,
+            String type,
+            double electricity,
+            double oil,
+            double wages
+    ) {}
 }

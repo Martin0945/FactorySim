@@ -53,8 +53,8 @@ public class SimulationBuilder {
         return workerFactory.createWorker(type);
     }
 
-    public SimulationRecord build(){
-        Factory factory = new Factory("Factory one", lines);
+    public SimulationRecord build(String name){
+        Factory factory = new Factory(name, lines);
 
         new VisitorManager(factory, eventBus);
 

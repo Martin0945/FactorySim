@@ -95,15 +95,23 @@
 
         if (out.consumption) {
             text += `--- Consumption ---\n`;
+
             out.consumption.lineConsumptions.forEach(lc => {
-                text += `${lc.lineName}: electricity=${lc.electricity}, oil=${lc.oil}, wages=${lc.wages}\n`;
+                text += `${lc.lineName}: electricity = ${lc.electricity.toFixed(1)}kWh, oil = ${lc.oil.toFixed(1)}l, wages = ${lc.wages.toFixed(1)}Kč\n`;
+
+                if (lc.machines) {
+                    lc.machines.forEach(m => {
+                        text += `    • [${m.type}] "${m.name}": E=${m.electricity.toFixed(1)}, O=${m.oil.toFixed(1)}, W=${m.wages.toFixed(1)}\n`;
+                    });
+                    text += `    --------------------------------\n`;
+                }
             });
-            text += `TOTAL: electricity=${out.consumption.totalElectricity}, oil=${out.consumption.totalOil}, wages=${out.consumption.totalWages}\n\n`;
+            text += `TOTAL: electricity = ${out.consumption.totalElectricity.toFixed(1)}kWh, oil = ${out.consumption.totalOil.toFixed(1)}l, wages = ${out.consumption.totalWages.toFixed(1)}Kč\n\n`;
         }
 
         if (out.outages) {
             text += `--- Outages ---\n`;
-            text += `Longest: ${out.outages.longestOutage}, Shortest: ${out.outages.shortestOutage}, Average: ${out.outages.averageOutage}, Avg wait: ${out.outages.averageRepairWait}\n`;
+            text += `Longest: ${out.outages.longestOutage} ticks, Shortest: ${out.outages.shortestOutage} ticks, Average: ${out.outages.averageOutage} ticks, Avg wait: ${out.outages.averageRepairWait} ticks\n`;
         }
 
         outEl.value = text;
@@ -123,7 +131,7 @@
         log.scrollTop = log.scrollHeight;
     };
 
-    //buttoins
+    //buttons
     document.getElementById('startBtn').addEventListener('click', startSimulation);
     document.getElementById('stopBtn').addEventListener('click', stopSimulation);
 </script>

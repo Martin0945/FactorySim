@@ -4,6 +4,7 @@ import event.EventBus;
 import lombok.Getter;
 import lombok.Setter;
 import model.devices.state.State;
+import model.economy.ConsumptionProfile;
 import model.material.Material;
 
 import java.util.List;
@@ -11,15 +12,13 @@ import java.util.List;
 @Getter
 @Setter
 public abstract class Station extends Workforce {
-    private int electricity;
     private double wear;
     private double wearPerTick;
     private double breakThreshold;
     private int priority;
 
-    public Station(int electricity, EventBus eventBus) {
-        super();
-        this.electricity = electricity;
+    public Station(ConsumptionProfile consumptionProfile, EventBus eventBus) {
+        super(consumptionProfile);
         this.wear = 0;
         this.setEventBus(eventBus);
     }
@@ -27,6 +26,10 @@ public abstract class Station extends Workforce {
     @Override
     public void tick(){
         this.state = state.handleTick(this);
+
+        if (state.isWorking(this)) {
+            consume();
+        }
     }
 
     @Override

@@ -11,8 +11,6 @@ import model.material.Material;
 
 import java.util.List;
 
-import static java.lang.Math.abs;
-
 @Log
 public class WorkingState implements State {
 

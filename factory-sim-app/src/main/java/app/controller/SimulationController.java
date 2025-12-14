@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.FactoryStateReport;
 import app.service.SimulationService;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class SimulationController {
         return simulationService.tick();
     }
     @GetMapping("/state")
-    public Object state() {
+    public FactoryStateReport state() {
         return simulationService.getFactoryState();
     }
 

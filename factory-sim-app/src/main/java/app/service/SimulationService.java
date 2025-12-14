@@ -1,5 +1,9 @@
 package app.service;
 
+import app.dto.ConsumptionReport;
+import app.dto.FactoryConfigReport;
+import app.dto.FactoryStateReport;
+import app.dto.OutagesReport;
 import event.Event;
 import event.EventBus;
 import model.devices.Station;
@@ -23,6 +27,7 @@ public class SimulationService {
     private final List<ProductionLine> productionLines;
     private SseEmitter emitter;
     private final SupplyManager supplyManager;
+    private final RepairManager repairManager;
 
 
     public SimulationService(JsonSimulatorLoader jsonLoader) {
@@ -65,6 +70,7 @@ public class SimulationService {
 
         this.engine = simulationRecord.engine();
         this.supplyManager = simulationRecord.supplyManager();
+        this.repairManager = simulationRecord.repairManager();
         this.productionLines = simulationRecord.lines();
         EventBus eventBus = simulationRecord.eventBus();
 
@@ -108,9 +114,14 @@ public class SimulationService {
         return String.format("Tick %d done.%n%s", engine.getCurrentTick(), report);
     }
 
-    public Object getFactoryState() {
-        return null; //placeholder
+    public FactoryStateReport getFactoryState() {
+        FactoryConfigReport config = FactoryConfigReport.fromProductionLines(productionLines);
+        ConsumptionReport consumption = ConsumptionReport.fromProductionLines(productionLines);
+        OutagesReport outages = OutagesReport.fromStats(repairManager.getOutageStats());
+
+        return new FactoryStateReport(config, consumption, outages);
     }
+
 
     public SseEmitter createEventStream() {
         SseEmitter newEmitter = new SseEmitter(0L);

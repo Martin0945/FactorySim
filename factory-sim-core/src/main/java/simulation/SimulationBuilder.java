@@ -66,7 +66,7 @@ public class SimulationBuilder {
 
         SimulationEngine engine = new SimulationEngine(factory, repairManager, eventBus);
 
-        return new SimulationRecord(engine, supplyManager, eventBus, lines);
+        return new SimulationRecord(engine, supplyManager, repairManager,eventBus, lines);
     }
 
 }

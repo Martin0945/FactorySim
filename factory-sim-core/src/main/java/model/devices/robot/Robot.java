@@ -1,14 +1,12 @@
 package model.devices.robot;
 
-import event.Event;
 import event.EventBus;
-import event.EventType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.state.IdleState;
-import model.inspection.Director;
+import model.economy.ConsumptionProfile;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -24,7 +22,7 @@ public class Robot extends Station {
     public Robot(String name, int electricity, double wearPerTick, int priority,
                  int processDuration, MaterialType outputType, List<MaterialType> recipe,
                  EventBus eventBus) {
-        super(electricity, eventBus);
+        super(new ConsumptionProfile(electricity,0.0,0.0 ), eventBus);
         this.setName(name);
         this.setWearPerTick(wearPerTick);
         this.setPriority(priority);

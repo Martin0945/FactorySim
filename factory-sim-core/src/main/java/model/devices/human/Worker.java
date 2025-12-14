@@ -6,6 +6,7 @@ import lombok.extern.java.Log;
 import model.devices.Workforce;
 import model.devices.state.IdleState;
 import model.devices.state.State;
+import model.economy.ConsumptionProfile;
 import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
@@ -17,14 +18,12 @@ import java.util.List;
 @Log
 
 public class Worker extends Workforce {
-    private final int pay;
     private final int priority;
     private final EventBus eventBus;
 
     public Worker(int pay, int priority, EventBus eventBus, MaterialType outputType,
                   int processDuration, List<MaterialType> recipe, String name) {
-        super();
-        this.pay = pay;
+        super(new ConsumptionProfile(0.0,0.0,pay));
         this.priority = priority;
         this.eventBus = eventBus;
         this.setOutputType(outputType);
@@ -55,6 +54,10 @@ public class Worker extends Workforce {
 
     public void tick() {
         this.state = state.handleTick(this);
+
+        if (state.isWorking(this)) {
+            consume();
+        }
     }
 
 

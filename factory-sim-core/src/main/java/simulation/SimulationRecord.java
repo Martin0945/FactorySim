@@ -9,7 +9,8 @@ import java.util.List;
 public record SimulationRecord(
         SimulationEngine engine,
        SupplyManager supplyManager,
-       EventBus eventBus,
+        RepairManager repairManager,
+        EventBus eventBus,
        List<ProductionLine> lines) {
 
 }

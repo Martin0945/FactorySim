@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
 import model.devices.Station;
-import model.devices.state.IdleState;
-import model.inspection.Director;
+import model.economy.ConsumptionProfile;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -17,14 +16,11 @@ import java.util.List;
 @Setter
 @Log
 public class Machine extends Station {
-    private final int oil;
-
     public Machine(int electricity, double wearPerTick, int priority, EventBus eventBus,
                    int oil, MaterialType outputType, int processDuration, String name,
                    List<MaterialType> recipe) {
-        super(electricity, eventBus);
+        super(new ConsumptionProfile(electricity,oil,0.0 ), eventBus);
 
-        this.oil = oil;
         this.setOutputType(outputType);
 
         this.setWearPerTick(wearPerTick);

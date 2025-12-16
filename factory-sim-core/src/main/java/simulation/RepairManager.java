@@ -19,7 +19,6 @@ public class RepairManager implements EventListener, Simulatable {
     private final EventBus eventBus;
     private final Map<RepairTech, Station> activeRepairs = new HashMap<>();
 
-    private final int REPAIR_DURATION = 3;      //placeholder
     private final int MIN_REPAIR_DURATION = 2;
     private final int MAX_REPAIR_DURATION = 5;
     private final Map<Station, Integer> totalRepairTimes = new HashMap<>();

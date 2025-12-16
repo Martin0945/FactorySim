@@ -8,6 +8,7 @@ public class ConsumptionData {
     private double electricityUsed;
     private double oilUsed;
     private double wagesPaid;
+    private double materialCost;
 
     public void consumeElectricity(double amount) {
         electricityUsed += amount;
@@ -22,6 +23,6 @@ public class ConsumptionData {
     }
 
     public ConsumptionSnapshot snapshot() {
-        return new ConsumptionSnapshot(electricityUsed, oilUsed, wagesPaid);
+        return new ConsumptionSnapshot(electricityUsed, oilUsed, wagesPaid,materialCost);
     }
 }

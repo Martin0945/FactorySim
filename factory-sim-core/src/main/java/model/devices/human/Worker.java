@@ -41,6 +41,11 @@ public class Worker extends Workforce {
     }
 
     @Override
+    public void consume(){
+        consumption.payWages(profile.wagePerTick());
+    }
+
+    @Override
     public boolean acceptInput(List<Material> materials) {
         State oldState = state;
 

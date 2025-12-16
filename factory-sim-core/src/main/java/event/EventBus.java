@@ -1,5 +1,6 @@
 package event;
 
+import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
@@ -9,17 +10,13 @@ import java.util.function.Consumer;
 public class EventBus {
 
     private final Map<EventType, List<EventListener>> listeners = new HashMap<>();
+    @Getter
     private final EventStats eventStats = new EventStats();
-
+    @Setter
+    private Consumer<Event> uiListener;
     //order events by their priority
     private final PriorityQueue<Event> eventQueue = new PriorityQueue<>(Comparator.comparing(Event::getPriority).reversed());
 
-    @Setter
-    private Consumer<Event> uiListener;
-
-    public EventStats getEventStats() {
-        return eventStats;
-    }
 
     public void register(EventType type, EventListener listener) {
         listeners.computeIfAbsent(type, k -> new ArrayList<>()).add(listener);

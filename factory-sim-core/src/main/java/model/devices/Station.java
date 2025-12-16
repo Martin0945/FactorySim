@@ -31,6 +31,11 @@ public abstract class Station extends Workforce {
             consume();
         }
     }
+    @Override
+    public void consume(){
+        consumption.consumeElectricity(profile.electricityPerTick()*(1+wear/100));
+        consumption.consumeOil(profile.oilPerTick()*(1+wear/100));
+    }
 
     @Override
     public boolean acceptInput(List<Material> materials) {

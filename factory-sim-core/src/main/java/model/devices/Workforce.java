@@ -38,16 +38,6 @@ public abstract class Workforce {
         this.profile = profile;
     }
 
-    public void consume() {
-        consumption.consumeElectricity(profile.electricityPerTick());
-        consumption.consumeOil(profile.oilPerTick());
-        consumption.payWages(profile.wagePerTick());
-    }
-
-    public ConsumptionData getConsumptionData() {
-        return consumption;
-    }
-
     public List<MaterialType> getInput() {
         return recipe;
     }
@@ -55,6 +45,8 @@ public abstract class Workforce {
     public MaterialType getOutput() {
         return outputType;
     }
+
+    public abstract void consume();
 
     public abstract void acceptVisitor(Visitor visitor);
 

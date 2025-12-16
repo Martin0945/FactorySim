@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f7f7f7;
+}
+
+button {
+    padding: 6px 12px;
+    margin: 4px;
+}
+
+input[type=number] {
+    width: 60px;
+}
+
+textarea {
+    width: 100%;
+    height: 120px;
+    font-family: monospace;
+}
+
+.panel {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+#log {
+    height: 500px;
+    overflow-y: scroll;
+    background: #f0f0f0;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.layout {
+    display: flex;
+    gap: 20px;
+}
+
+.left {
+    flex: 2;
+}
+
+.right {
+    flex: 1;
+}
+
+.report-area {
+    height: 350px;
+}

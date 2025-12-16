@@ -3,180 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title>Factory Simulation Dashboard</title>
-    <style>
-        body { font-family: Arial; padding: 20px; background:#f7f7f7; }
-        button { padding: 6px 12px; margin: 4px; }
-        input[type=number] { width: 60px; }
-        textarea { width: 100%; height: 120px; }
-        .panel { background: white; padding: 16px; border-radius: 8px; margin-bottom: 20px; }
-        #log { height: 300px; overflow-y: scroll; background: #f0f0f0; padding: 8px; border-radius: 6px; }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <h1>Factory Simulation</h1>
 
-<div class="panel">
-    <h3>Tick Control</h3>
-    <label>
-        Interval (ms):
-        <input type="number" id="tickInterval" value="1000" min="100"/>
-    </label>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
+<div class="layout">
+
+    <!-- LEFT COLUMN -->
+    <div class="left">
+
+        <div class="panel">
+            <h3>Tick Control</h3>
+            <label>
+                Interval (ms):
+                <input type="number" id="tickInterval" value="1000" min="100"/>
+            </label>
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+        </div>
+
+        <div class="panel">
+            <h3>Tick out</h3>
+            <textarea id="tickOut" readonly></textarea>
+        </div>
+
+        <div class="panel">
+            <h3>Report type</h3>
+            <label><input type="radio" name="reportType" value="all" checked> All</label>
+            <label><input type="radio" name="reportType" value="config"> Configuration</label>
+            <label><input type="radio" name="reportType" value="events"> Event summary</label>
+            <label><input type="radio" name="reportType" value="consumption"> Consumption</label>
+            <label><input type="radio" name="reportType" value="outages"> Outages</label>
+        </div>
+
+        <div class="panel">
+            <h3>Factory state</h3>
+            <button id="loadStateBtn">Load state</button>
+            <textarea id="stateOut" readonly class="report-area"></textarea>
+        </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right">
+        <div class="panel">
+            <h3>Live Events</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+
 </div>
 
-<div class="panel">
-    <h3>Tick out</h3>
-    <textarea id="tickOut" readonly></textarea>
-</div>
-<div class="panel">
-    <h3>Report type</h3>
-    <label><input type="radio" name="reportType" value="all" checked> All</label>
-    <label><input type="radio" name="reportType" value="config"> Configuration</label>
-    <label><input type="radio" name="reportType" value="events"> Event summary</label>
-    <label><input type="radio" name="reportType" value="consumption"> Consumption</label>
-    <label><input type="radio" name="reportType" value="outages"> Outages</label>
-</div>
-
-<div class="panel">
-    <h3>Factory state</h3>
-    <button onclick="loadState()">Load state</button>
-    <textarea id="stateOut" readonly></textarea>
-</div>
-
-<div class="panel">
-    <h3>Events</h3>
-    <div id="log"></div>
-</div>
-
-<script>
-    let tickIntervalId = null;
-    const eventCounts = {};
-
-
-    async function api(path) {
-        const res = await fetch('/simulation/' + path);
-        const text = await res.text();
-        try { return JSON.parse(text); } catch(e) { return text; }
-    }
-
-    async function runTick() {
-        const out = await api('tick?n=1');
-        const tickOut = document.getElementById('tickOut');
-        tickOut.value += out + '\n';
-        tickOut.scrollTop = tickOut.scrollHeight;
-    }
-
-    function startSimulation() {
-        const interval = parseInt(document.getElementById('tickInterval').value) || 1000;
-        if (!tickIntervalId) {
-            tickIntervalId = setInterval(runTick, interval);
-        }
-    }
-
-    function stopSimulation() {
-        if (tickIntervalId) {
-            clearInterval(tickIntervalId);
-            tickIntervalId = null;
-        }
-    }
-
-    function getSelectedReportType() {
-        return document.querySelector('input[name="reportType"]:checked').value;
-    }
-
-    function formatConfiguration(config) {
-        let text = '';
-
-        config.productionLines.forEach(line => {
-            text += `=== Production Line: ${line.name} ===\n`;
-            line.stations.forEach(station => {
-                text += `${station.type} "${station.name}" | Input: ${station.input} | Output: ${station.output}\n`;
-            });
-            text += '\n';
-        });
-
-        return text;
-    }
-
-    function formatConsumption(consumption) {
-        let text = '--- Consumption ---\n';
-
-        consumption.lineConsumptions.forEach(lc => {
-            text += `${lc.lineName}: electricity=${lc.electricity.toFixed(1)}kWh, oil=${lc.oil.toFixed(1)}l, wages=${lc.wages.toFixed(1)}\n`;
-        });
-
-        text += `TOTAL: electricity=${consumption.totalElectricity.toFixed(1)}kWh, oil=${consumption.totalOil.toFixed(1)}l, wages=${consumption.totalWages.toFixed(1)}\n\n`;
-
-        return text;
-    }
-
-    function formatOutages(outages) {
-        return (
-            `--- Outages ---\n` +
-            `Longest: ${outages.longestOutage} ticks\n` +
-            `Shortest: ${outages.shortestOutage} ticks\n` +
-            `Average: ${outages.averageOutage} ticks\n` +
-            `Avg repair wait: ${outages.averageRepairWait} ticks\n`
-        );
-    }
-
-    function formatEvents(events) {
-        let text = '--- Event Summary ---\n';
-
-        Object.entries(events.counts).forEach(([type, count]) => {
-            text += `${type}: ${count}\n`;
-        });
-
-        return text + '\n';
-    }
-
-    async function loadState() {
-        const report = await api('state');
-        const outEl = document.getElementById('stateOut');
-
-        if (!report) {
-            outEl.value = 'No data';
-            return;
-        }
-
-        const type = getSelectedReportType();
-        let text = '';
-
-        if (type === 'all' || type === 'config') {
-            text += formatConfiguration(report.configuration);
-        }
-
-        if ((type === 'all' || type === 'consumption') && report.consumption) {
-            text += formatConsumption(report.consumption);
-        }
-
-        if ((type === 'all' || type === 'outages') && report.outages) {
-            text += formatOutages(report.outages);
-        }
-        if ((type === 'all' || type === 'events') && report.events) {
-            text += formatEvents(report.events);
-        }
-
-        outEl.value = text;
-        outEl.scrollTop = outEl.scrollHeight;
-    }
-    const sse = new EventSource("/simulation/events/stream");
-    sse.onmessage = function(e) {
-        const ev = JSON.parse(e.data);
-        eventCounts[ev.type] = (eventCounts[ev.type] || 0) + 1;
-        const log = document.getElementById("log");
-        const line = document.createElement("div");
-        line.textContent = ev.message;
-        log.appendChild(line);
-        log.scrollTop = log.scrollHeight;
-    };
-
-    //buttons
-    document.getElementById('startBtn').addEventListener('click', startSimulation);
-    document.getElementById('stopBtn').addEventListener('click', stopSimulation);
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>

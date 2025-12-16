@@ -29,7 +29,7 @@ public class PrintOutagesReport implements PrintReport {
                     out.averageRepairWait());
 
             log.info("Outages Report generated");
-            System.out.println("Saved: outages.txt");
+            //System.out.println("Saved: outages.txt");
 
         } catch (IOException e) {
             log.warning(e.getMessage());

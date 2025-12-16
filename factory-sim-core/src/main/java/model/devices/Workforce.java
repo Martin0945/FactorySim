@@ -47,7 +47,7 @@ public abstract class Workforce {
     public ConsumptionData getConsumptionData() {
         return consumption;
     }
-    // inside Workforce class
+
     public List<MaterialType> getInput() {
         return recipe;
     }

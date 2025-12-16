@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class SimulationService {
 
     private final SimulationEngine engine;
+    private final EventBus eventBus;
     private final List<ProductionLine> productionLines;
     private SseEmitter emitter;
     private final SupplyManager supplyManager;
@@ -69,7 +70,7 @@ public class SimulationService {
         this.supplyManager = simulationRecord.supplyManager();
         this.repairManager = simulationRecord.repairManager();
         this.productionLines = simulationRecord.lines();
-        EventBus eventBus = simulationRecord.eventBus();
+        this.eventBus = simulationRecord.eventBus();
 
 
         eventBus.setUiListener(event -> {
@@ -115,10 +116,22 @@ public class SimulationService {
         FactoryConfigReport config = FactoryConfigReport.fromProductionLines(productionLines);
         ConsumptionReport consumption = ConsumptionReport.fromProductionLines(productionLines);
         OutagesReport outages = OutagesReport.fromStats(repairManager.getOutageStats());
-
-        return new FactoryStateReport(config, consumption, outages);
+        EventReport events = buildEventReport();
+        return new FactoryStateReport(config, events, consumption, outages);
     }
 
+    private EventReport buildEventReport() {
+        return new EventReport(
+                eventBus.getEventStats()
+                        .snapshot()
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                e -> e.getKey().name(),
+                                Map.Entry::getValue
+                        ))
+        );
+    }
 
     public SseEmitter createEventStream() {
         SseEmitter newEmitter = new SseEmitter(0L);
@@ -129,5 +142,4 @@ public class SimulationService {
 
         return newEmitter;
     }
-
 }

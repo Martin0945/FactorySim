@@ -9,11 +9,17 @@ import java.util.function.Consumer;
 public class EventBus {
 
     private final Map<EventType, List<EventListener>> listeners = new HashMap<>();
+    private final EventStats eventStats = new EventStats();
+
     //order events by their priority
     private final PriorityQueue<Event> eventQueue = new PriorityQueue<>(Comparator.comparing(Event::getPriority).reversed());
 
     @Setter
     private Consumer<Event> uiListener;
+
+    public EventStats getEventStats() {
+        return eventStats;
+    }
 
     public void register(EventType type, EventListener listener) {
         listeners.computeIfAbsent(type, k -> new ArrayList<>()).add(listener);
@@ -21,6 +27,8 @@ public class EventBus {
 
     public void publish(Event event) {
         eventQueue.add(event);
+        eventStats.record(event.getType());
+
         if (uiListener != null) {
             uiListener.accept(event);
         }

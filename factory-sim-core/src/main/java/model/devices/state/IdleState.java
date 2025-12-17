@@ -38,7 +38,8 @@ public class IdleState implements State {
                 //debug log.info(workforce.getName()+ "found material:" + found);
                 foundMaterials.add(found);
                 tempAvailable.remove(found);
-            }else{
+            }
+            else{
                 if (workforce.getEventBus() != null) {
                     if(typeNeeded.isRaw() && !helpRequested) {
                         workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));

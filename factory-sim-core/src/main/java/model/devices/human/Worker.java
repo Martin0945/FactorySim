@@ -66,7 +66,11 @@ public class Worker extends Workforce {
     }
 
     public void finishWork() {
-        this.outputBuffer = new Material(this.getOutputType());
+        double inputValue = inputBuffer.stream()
+                .mapToDouble(Material::getValue)
+                .sum();
+        double finalValue = inputValue * getQualityMultiplier() * 2.0;
+        this.outputBuffer = new Material(this.getOutputType(), finalValue);
         inputBuffer = null;
     }
 

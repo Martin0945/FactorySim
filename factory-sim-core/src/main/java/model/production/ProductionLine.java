@@ -22,9 +22,7 @@ public class ProductionLine implements Simulatable {
 
     private final List<Material> lineStorage = new ArrayList<>();
     private final MaterialType targetOutput;
-
     private final List<Material> outputs = new ArrayList<>();
-    private final PriceList priceList = new PriceList();
     private double materialCosts;
     private double revenue;
 
@@ -37,8 +35,7 @@ public class ProductionLine implements Simulatable {
     public void addInput(Material material) {
         lineStorage.add(material);
 
-        double price = priceList.getMaterialPrice(material.getType());
-        materialCosts += price;
+        materialCosts += material.getValue();
 //        log.info(name + ": Added input " + material.getType());
     }
 
@@ -52,8 +49,7 @@ public class ProductionLine implements Simulatable {
             if (product != null) {
                 if (product.getType() == targetOutput) {
                     outputs.add(product);
-                    double price = priceList.getMaterialPrice(product.getType());
-                    revenue += price;
+                    revenue += product.getValue();
                     log.info("%s FINISHED: %s".formatted(this.name, product.getType()));
                     //todo event
                 } else {

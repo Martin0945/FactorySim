@@ -31,6 +31,11 @@ public abstract class Station extends Workforce {
             consume();
         }
     }
+    @Override public double getQualityMultiplier() {
+        return 1.2 - wear*(0.4/breakThreshold); //map 0 - break threshold, to 1.2 - 0.8
+    }
+
+
     @Override
     public void consume(){
         consumption.consumeElectricity(profile.electricityPerTick()*(1+wear/100));

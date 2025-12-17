@@ -8,6 +8,7 @@ import lombok.extern.java.Log;
 import model.devices.Workforce;
 import model.material.Material;
 import model.material.MaterialType;
+import simulation.prices.PriceList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,7 @@ public class SupplyManager implements EventListener {
     private final int REFILL_SIZE = 6;
     private final int MAX_NUM_OF_MATERIALS = 10;
     private final int MAX_NUM_OF_PRODUCTS = 10;
-
+    private final PriceList priceList = new PriceList();
     private final List<ProductionLine> allLines;
     private final Map<String, List<MaterialType>> lineRecipes = new HashMap<>();
 
@@ -48,7 +49,9 @@ public class SupplyManager implements EventListener {
 
             for (int i = 0; i < REFILL_SIZE; i++) {
                 for (MaterialType material : recipe) {
-                    line.addInput(new Material(material));
+                    if(material.isRaw()) {  //only restock basic materials
+                        line.addInput(new Material(material, priceList.getMaterialPrice(material)));
+                    }
                 }
             }
             log.info("First fill of %s ".formatted(line.getName()));
@@ -87,8 +90,10 @@ public class SupplyManager implements EventListener {
             long toAdd = Math.min(REFILL_SIZE, Math.max(missing, 0));
 
             for(int i = 0; i < toAdd; i++) {
-                 line.addInput(new Material(type));
-                 found = true;
+                if(type.isRaw()) {
+                    line.addInput(new Material(type, priceList.getMaterialPrice(type)));
+                    found = true;
+                }
             }
         }
         if(found) {

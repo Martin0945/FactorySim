@@ -39,7 +39,11 @@ public class Robot extends Station {
 
     @Override
     public void finishWork() {
-        this.setOutputBuffer(new Material(this.getOutputType()));
+        double inputValue = inputBuffer.stream()
+                .mapToDouble(Material::getValue)
+                .sum();
+        double finalValue = inputValue * getQualityMultiplier() * 2.2;
+        this.setOutputBuffer(new Material(this.getOutputType(), finalValue));
 
         this.setInputBuffer(null);
 

@@ -35,7 +35,11 @@ public class Machine extends Station {
 
     @Override
     public void finishWork() {
-        this.setOutputBuffer(new Material(this.getOutputType()));
+        double inputValue = inputBuffer.stream()
+                .mapToDouble(Material::getValue)
+                .sum();
+        double finalValue = inputValue * getQualityMultiplier() * 2.0;
+        this.setOutputBuffer(new Material(this.getOutputType(),finalValue));
         this.setInputBuffer(null);
 
         //log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));

@@ -46,6 +46,10 @@ public abstract class Workforce {
         return outputType;
     }
 
+    public double getQualityMultiplier() {
+        return 1.0;
+    }
+
     public abstract void consume();
 
     public abstract void acceptVisitor(Visitor visitor);

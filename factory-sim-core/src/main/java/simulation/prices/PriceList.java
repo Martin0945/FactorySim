@@ -15,12 +15,15 @@ public class PriceList {
         materialPrices.put(MaterialType.GLASS, 100);
         materialPrices.put(MaterialType.ELECTRONICS, 500);
         materialPrices.put(MaterialType.PAINT, 80);
-        materialPrices.put(MaterialType.PAINTED_PHONE, 8000);
-        materialPrices.put(MaterialType.PAINTED_SCOOTER, 10000);
     }
 
     public int getMaterialPrice(MaterialType type) {
-        return materialPrices.get(type);
+        if(materialPrices.containsKey(type)) {
+            return materialPrices.get(type);
+        } else {
+            System.out.println("No price for " + type);
+            return 0;
+        }
     }
 
 }

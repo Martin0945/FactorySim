@@ -14,7 +14,8 @@ import java.util.List;
 
 @Log
 public class IdleState implements State {
-    private boolean helpRequested = false;
+    private int helpCooldown = 0;
+    private final int COOLDOWN_INTERVAL = 15;
 
     /**
      * Scans available materials against the workforce's recipe.
@@ -30,31 +31,54 @@ public class IdleState implements State {
         List<Material> tempAvailable = new ArrayList<>(materials);
 
         for(MaterialType typeNeeded : neededMaterials) {
-            Material found = null;
-            for(Material materialAvailable : tempAvailable) {
-                if(materialAvailable.getType() == typeNeeded) {
-                    found = materialAvailable;
-                    break;
-                }
-            }
+
+            Material found = findMaterial(typeNeeded, tempAvailable);
+
             if(found != null) {
                 foundMaterials.add(found);
                 tempAvailable.remove(found);
-            } else{
-                if (workforce.getEventBus() != null) {
-                    if(typeNeeded.isRaw() && !helpRequested) {
-                        workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
-                        helpRequested = true;
-                    }
-                }
-                return this;
+            }else{
+                return handleOutOfInput(workforce, typeNeeded);
             }
         }
+
         materials.removeAll(foundMaterials);
         workforce.setInputBuffer(foundMaterials);
         workforce.setCurrentProgress(0);
 
         return new WorkingState();
+    }
+
+    private static Material findMaterial(MaterialType typeNeeded, List<Material> tempAvailable) {
+        Material found = null;
+
+        for(Material materialAvailable : tempAvailable) {
+            if(materialAvailable.getType() == typeNeeded) {
+                found = materialAvailable;
+                break;
+            }
+        }
+        return found;
+    }
+
+    /**
+     * Checks if we need to request raw materials.
+     * Uses a cooldown timer to prevent spamming the SupplyManager with events every single tick.
+     *
+     * @return The current state instance (this), as the workforce remains idle.
+     */
+    private IdleState handleOutOfInput(Workforce workforce, MaterialType typeNeeded) {
+        if (workforce.getEventBus() != null) {
+            if(typeNeeded.isRaw() && helpCooldown <= 0) {
+                workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
+
+                helpCooldown = COOLDOWN_INTERVAL;
+            }
+        }
+        if(helpCooldown > 0){
+            helpCooldown--;
+        }
+        return this;
     }
 
     @Override

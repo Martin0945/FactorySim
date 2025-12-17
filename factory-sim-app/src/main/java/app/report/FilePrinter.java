@@ -13,6 +13,10 @@ public class FilePrinter {
         this.reports = reports;
     }
 
+    /**
+     * Generates text files for all registered report types.
+     * @param data The current factory state data
+     */
     public void saveReports(FactoryStateReport data){
         reports.forEach(report -> report.printReport(data));
     }

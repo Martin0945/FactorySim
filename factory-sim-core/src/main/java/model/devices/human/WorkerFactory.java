@@ -1,7 +1,7 @@
 package model.devices.human;
 
 import event.EventBus;
-import model.material.MaterialType; // Importujeme Type, ne Material
+import model.material.MaterialType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +18,21 @@ public class WorkerFactory {
         }
     }
 
-    public Worker createWorker(String name, List<MaterialType> recipe, MaterialType outputType, int priority,
-                               int processDuration, int pay) {
+    /**
+     * Creates a new Worker instance with custom parameters, bypassing presets.
+     *
+     */
+    public Worker createWorker(String name, List<MaterialType> recipe, MaterialType outputType,
+                               int priority, int processDuration, int pay) {
 
         return new Worker(pay, priority, eventBus, outputType,processDuration,
                 recipe, name);
     }
 
+    /**
+     * Creates a new Worker based on a registered preset name.
+     * @throws IllegalArgumentException if the preset name is unknown.
+     */
     public Worker createWorker(String presetName) {
         WorkerConfig cfg = presets.get(presetName);
         if (cfg == null) throw new IllegalArgumentException("Unknown preset: " + presetName);
@@ -40,6 +48,9 @@ public class WorkerFactory {
         );
     }
 
+    /**
+     * Registers a new worker configuration preset or overwrites an existing one.
+     */
     public void registerPreset(String name, WorkerConfig cfg) {
         presets.put(name, cfg);
     }

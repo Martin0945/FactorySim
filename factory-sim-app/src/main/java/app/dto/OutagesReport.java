@@ -8,6 +8,9 @@ public record OutagesReport(
         double averageOutage,
         double averageRepairWait
 ) {
+    /**
+     * Extracts values from the internal OutageStats calculator.
+     */
     public static OutagesReport fromStats(OutageStats stats) {
         return new OutagesReport(
                 stats.getShortestOutage(),

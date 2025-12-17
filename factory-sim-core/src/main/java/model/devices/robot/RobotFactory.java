@@ -1,7 +1,10 @@
 package model.devices.robot;
 
 import event.EventBus;
+import model.material.MaterialType;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RobotFactory {
@@ -16,6 +19,19 @@ public class RobotFactory {
         }
     }
 
+    /**
+     * Creates a new Robot instance with custom parameters, bypassing presets.
+     */
+    public Robot createRobot(String name, int electricity, int wearPerTick, int priority,
+                               int duration, MaterialType outType,  List<MaterialType> recipe) {
+
+        return new Robot(name, electricity, wearPerTick, priority, duration, outType, recipe, eventBus);
+    }
+
+    /**
+     * Creates a new Robot based on a registered preset name.
+     * @throws IllegalArgumentException if the preset name is unknown.
+     */
     public Robot createRobot(String presetName) {
         RobotConfig cfg = presets.get(presetName);
         if (cfg == null) throw new IllegalArgumentException("Unknown robot preset: " + presetName);
@@ -32,6 +48,9 @@ public class RobotFactory {
         );
     }
 
+    /**
+     * Registers a new robot configuration preset or overwrites an existing one.
+     */
     public void registerPreset(String name, RobotConfig cfg) {
         presets.put(name, cfg);
     }

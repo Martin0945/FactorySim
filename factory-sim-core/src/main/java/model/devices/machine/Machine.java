@@ -15,7 +15,11 @@ import java.util.List;
 @Getter
 @Setter
 @Log
+
 public class Machine extends Station {
+    private final double BREAK_THRESHOLD = 80.0;
+    private final double MACHINE_MULTIPLIER = 2;
+
     public Machine(int electricity, double wearPerTick, int priority, EventBus eventBus,
                    int oil, MaterialType outputType, int processDuration, String name,
                    List<MaterialType> recipe) {
@@ -27,7 +31,7 @@ public class Machine extends Station {
         this.setPriority(priority);
         this.setEventBus(eventBus);
         this.setProcessDuration(processDuration);
-        this.setBreakThreshold(80.0);
+        this.setBreakThreshold(BREAK_THRESHOLD);
         this.setName(name);
         this.setRecipe(recipe);
         this.setProcessDuration(processDuration);
@@ -35,16 +39,12 @@ public class Machine extends Station {
 
     @Override
     public void finishWork() {
-        double inputValue = inputBuffer.stream()
+        double inputValue = this.getInputBuffer().stream()
                 .mapToDouble(Material::getValue)
                 .sum();
-        double finalValue = inputValue * getQualityMultiplier() * 2.0;
+        double finalValue = inputValue * getQualityMultiplier() * MACHINE_MULTIPLIER;
         this.setOutputBuffer(new Material(this.getOutputType(),finalValue));
         this.setInputBuffer(null);
-
-        //log.info("Machine %s FINISHED: %s".formatted(this.name, this.outputType));
-
-        //todo event
     }
 
     @Override

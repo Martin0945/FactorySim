@@ -13,7 +13,6 @@ import simulation.prices.PriceList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Log
 
@@ -25,6 +24,9 @@ public class SupplyManager implements EventListener {
     private final List<ProductionLine> allLines;
     private final Map<String, List<MaterialType>> lineRecipes = new HashMap<>();
 
+    /**
+     * Initializes the manager, registers for OUT_OF_INPUT events, and defines default line recipes.
+     */
     public SupplyManager(EventBus eventBus, List<ProductionLine> AllLines) {
         this.allLines = AllLines;
         eventBus.register(EventType.OUT_OF_INPUT, this);
@@ -43,6 +45,10 @@ public class SupplyManager implements EventListener {
         ));
     }
 
+    /**
+     * Fills all production lines with an initial batch of raw materials
+     * based on their specific recipes.
+     */
     public void initializeLines() {
         for(ProductionLine line : allLines) {
             List<MaterialType> recipe = lineRecipes.get(line.getName());
@@ -58,6 +64,10 @@ public class SupplyManager implements EventListener {
         }
     }
 
+    /**
+     * Reacts to OUT_OF_INPUT events by identifying the starving workforce
+     * and triggering a smart restock for its production line.
+     */
     @Override
     public void handleEvent(Event event) {
         if(event.getType() == EventType.OUT_OF_INPUT) {
@@ -72,7 +82,14 @@ public class SupplyManager implements EventListener {
         }
     }
 
-    public void smartRestock(ProductionLine line, Workforce workforce) {
+    /**
+     * Restocks raw materials for a specific workforce if storage limits allow.
+     * Prevents overstocking if the line is already full of products or materials.
+     *
+     * @param line The production line to restock.
+     * @param workforce The specific workforce requesting materials.
+     */
+    private void smartRestock(ProductionLine line, Workforce workforce) {
         List<MaterialType> recipe =  workforce.getRecipe();
         boolean found = false;
 
@@ -101,7 +118,7 @@ public class SupplyManager implements EventListener {
         }
     }
 
-    ProductionLine findLine(Workforce workforce) {
+    private ProductionLine findLine(Workforce workforce) {
         for(ProductionLine line : allLines) {
             List<Workforce> lineWorkforces = line.getWorkforces();
             for(Workforce w : lineWorkforces) {

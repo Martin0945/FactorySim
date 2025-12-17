@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 
 public record FactoryConfigReport(List<ProductionLineConfig> productionLines) {
 
-
+    /**
+     * Maps the active ProductionLine objects to a static configuration DTO.
+     */
     public static FactoryConfigReport fromProductionLines(List<ProductionLine> lines) {
         List<ProductionLineConfig> lineConfigs = lines.stream()
                 .map(line -> new ProductionLineConfig(
@@ -16,10 +18,10 @@ public record FactoryConfigReport(List<ProductionLineConfig> productionLines) {
                                 .map(w -> new StationConfig(
                                         w.getName(),
                                         w.getClass().getSimpleName(),
-                                        w.getInput() != null && !w.getInput().isEmpty()
-                                                ? w.getInput().stream().map(Enum::name).collect(Collectors.joining(", "))
+                                        w.getRecipe() != null && !w.getRecipe().isEmpty()
+                                                ? w.getRecipe().stream().map(Enum::name).collect(Collectors.joining(", "))
                                                 : null,
-                                        w.getOutput() != null ? w.getOutput().name() : null
+                                        w.getOutputType() != null ? w.getOutputType().name() : null
                                 ))
                                 .collect(Collectors.toList())
                 ))

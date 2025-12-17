@@ -16,6 +16,9 @@ public class VisitorManager implements EventListener {
         eventBus.register(EventType.INSPECTION, this);
     }
 
+    /**
+     * Based on the event type, calls either director or inspector.
+     */
     @Override
     public void handleEvent(Event event){
         if(event.getType() == EventType.DIRECTOR_VISIT){
@@ -25,19 +28,15 @@ public class VisitorManager implements EventListener {
         }
     }
 
-    void handleDirector(){
+    private void handleDirector(){
         Director director = new Director();
-
         factory.acceptVisitor(director);
     }
 
-
-    void handleInspection(){
+    private void handleInspection(){
         Inspector inspector = new Inspector();
 
         factory.acceptVisitor(inspector);
         inspector.reportInspection();
-
     }
-
 }

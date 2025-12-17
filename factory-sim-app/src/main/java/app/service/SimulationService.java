@@ -3,13 +3,14 @@ package app.service;
 import app.dto.*;
 import event.Event;
 import event.EventBus;
-import model.devices.Station;
+import event.EventSource;
 import model.material.MaterialType;
 import model.production.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import simulation.*;
 import org.springframework.stereotype.Service;
+import simulation.repair.RepairManager;
 
 
 import java.util.HashMap;
@@ -27,10 +28,12 @@ public class SimulationService {
     private final SupplyManager supplyManager;
     private final RepairManager repairManager;
 
-
+    /**
+     * Initializes the simulation service.
+     * Sets up the factory scenario using the SimulationBuilder and registers the UI event listener.
+     */
     public SimulationService(JsonSimulatorLoader jsonLoader) {
         SimulationBuilder builder = new SimulationBuilder();
-
 
         //JSON loader
 
@@ -81,28 +84,30 @@ public class SimulationService {
                 emitter = null; // disconnected client
             }
         });
-
-
     }
 
     private Map<String, Object> buildEventPayload(Event event) {
         Map<String, Object> payload = new HashMap<>();
-        String sourceName = "";
-        Object src = event.getSource();
-        if (src instanceof Station) {
-            sourceName = ((Station) src).getName();
-        } else {
-            sourceName = src.getClass().getSimpleName();
-        }
-        String message = String.format("[%s] %s sent event [%s]", src.getClass().getSimpleName(), sourceName, event.getType().name());
+
+        EventSource src = event.getSource();
+        String sourceName = src.getName();
+        String className = src.getClass().getSimpleName();
+
+        String message = String.format("[%s] %s sent event [%s]", className, sourceName,
+                event.getType().name());
         payload.put("message", message);
         payload.put("type", event.getType().name());
-        payload.put("sourceClass", src.getClass().getSimpleName());
+        payload.put("sourceClass", className);
         payload.put("sourceName", sourceName);
         payload.put("priority", event.getPriority());
+
         return payload;
     }
 
+    /**
+     * Advances the simulation by one tick.
+     * @return A simple text report of the tick result.
+     */
     public String tick() {
         engine.runTick();
         String report = productionLines.stream()
@@ -112,11 +117,16 @@ public class SimulationService {
         return String.format("Tick %d done.%n%s", engine.getCurrentTick(), report);
     }
 
+    /**
+     * Collects data from various managers to create a comprehensive snapshot of the factory state.
+     * Used by the frontend to render the dashboard.
+     */
     public FactoryStateReport getFactoryState() {
         FactoryConfigReport config = FactoryConfigReport.fromProductionLines(productionLines);
         ConsumptionReport consumption = ConsumptionReport.fromProductionLines(productionLines);
         OutagesReport outages = OutagesReport.fromStats(repairManager.getOutageStats());
         EventReport events = buildEventReport();
+
         return new FactoryStateReport(config, events, consumption, outages);
     }
 
@@ -133,6 +143,9 @@ public class SimulationService {
         );
     }
 
+    /**
+     * Registers a new SSE (Server-Sent Events) client.
+     */
     public SseEmitter createEventStream() {
         SseEmitter newEmitter = new SseEmitter(0L);
         this.emitter = newEmitter;

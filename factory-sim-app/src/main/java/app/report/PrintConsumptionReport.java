@@ -25,10 +25,8 @@ public class PrintConsumptionReport implements PrintReport {
                     writer.printf("   • [%s] %s: Electricity = %.1fkWh, Oil = %.1fl, Wages = %.1fKč%n",
                             m.type(), m.name(), m.electricity(), m.oil(), m.wages());
                 }
-
                 writer.println("   --------------------------------");
             }
-
             var total = factoryData.consumption();
             writer.printf("TOTAL: Electricity = %.1fkWh, Oil = %.1fl, Wages = %.1fKč%n",
                     total.totalElectricity(), total.totalOil(), total.totalWages());

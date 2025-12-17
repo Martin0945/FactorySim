@@ -5,8 +5,6 @@ import model.devices.Workforce;
 import model.devices.human.Worker;
 import model.devices.machine.Machine;
 import model.devices.robot.Robot;
-import model.devices.state.State;
-import model.devices.state.WorkingState;
 import model.factory.Factory;
 import model.production.ProductionLine;
 
@@ -37,6 +35,9 @@ public class Director implements Visitor {
         log.info("DIRECTOR: visiting factory %s".formatted(factory.getName()));
     }
 
+    /**
+     * Calculates and logs the percentage of active (working) stations on this production line.
+     */
     @Override
     public void visit(ProductionLine prodLine) {
         double activeCount = 0;

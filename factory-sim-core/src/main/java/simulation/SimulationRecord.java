@@ -3,6 +3,7 @@ package simulation;
 import event.EventBus;
 import model.production.ProductionLine;
 import model.production.SupplyManager;
+import simulation.repair.RepairManager;
 
 import java.util.List;
 

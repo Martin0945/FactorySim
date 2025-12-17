@@ -9,11 +9,11 @@ import java.util.UUID;
 public class Event {
     private final String id = UUID.randomUUID().toString();
     private final EventType type;
-    private final Object source;
+    private final EventSource source;
     private final LocalDateTime timestamp = LocalDateTime.now();
     private final int priority;
 
-    public Event(EventType type, Object source, int priority) {
+    public Event(EventType type, EventSource source, int priority) {
         this.type = type;
         this.source = source;
         this.priority = priority;

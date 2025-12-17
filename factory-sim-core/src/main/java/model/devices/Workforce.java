@@ -1,6 +1,7 @@
 package model.devices;
 
 import event.EventBus;
+import event.EventSource;
 import lombok.Getter;
 import lombok.Setter;
 import model.devices.state.IdleState;
@@ -11,54 +12,70 @@ import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
 
-import java.lang.reflect.AnnotatedType;
 import java.util.List;
 
 @Getter
 @Setter
-public abstract class Workforce {
+public abstract class Workforce implements EventSource {
     protected State state;
-    protected String name;
-    protected List<MaterialType> recipe;
-    protected List<Material> inputBuffer;
-    protected Material outputBuffer;
-    protected int currentProgress = 0;
+    private String name;
+
+    private List<MaterialType> recipe;
+    private List<Material> inputBuffer;
+    private Material outputBuffer;
+    private MaterialType outputType;
+
+    private int currentProgress = 0;
     private int processDuration;
     private EventBus eventBus;
-    private MaterialType outputType;
-    @Getter
-    protected final ConsumptionData consumption = new ConsumptionData();
 
-    protected final ConsumptionProfile profile;
-
-
+    private final ConsumptionData consumption = new ConsumptionData();
+    private final ConsumptionProfile profile;
 
     public Workforce(ConsumptionProfile profile) {
         this.state = new IdleState();
         this.profile = profile;
     }
 
-    public List<MaterialType> getInput() {
-        return recipe;
-    }
-
-    public MaterialType getOutput() {
-        return outputType;
-    }
-
-    public double getQualityMultiplier() {
+    /**
+     * @return  the quality multiplier affecting the final product value.
+     * Default is 1.0 (no change).
+     */
+    protected double getQualityMultiplier() {
         return 1.0;
     }
 
-    public abstract void consume();
+    /**
+     * Consumes resources (money, electricity, oil) based on the profile.
+     */
+    protected abstract void consume();
 
+    /**
+     * Accepts a visitor for inspection purposes.
+     *
+     * @param visitor {@link Visitor}
+     */
     public abstract void acceptVisitor(Visitor visitor);
 
+    /**
+     * Performs a single simulation step. Updates state and triggers logic.
+     */
     public abstract void tick();
 
+    /**
+     * Retrieves the finished product and clears the output buffer.
+     * @return The finished Material or null if the buffer is empty.
+     */
     public abstract Material takeOutput();
 
+    /**
+     * Attempts to load materials into the input buffer.
+     * @return true if the input was accepted and state changed, false otherwise.
+     */
     public abstract boolean acceptInput(List<Material> material);
 
+    /**
+     * Finishes the work by putting the material into output buffer and calculates final value.
+     */
     public abstract void finishWork();
 }

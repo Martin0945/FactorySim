@@ -6,23 +6,26 @@ import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.Workforce;
 import model.devices.human.Worker;
-import model.devices.machine.Machine;
 import model.material.Material;
 import model.material.MaterialType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log
 public class IdleState implements State {
     private boolean helpRequested = false;
 
+    /**
+     * Scans available materials against the workforce's recipe.
+     * <p>
+     * If all ingredients are found, they are moved to the input buffer and work starts.
+     * If raw materials are missing, publishes an OUT_OF_INPUT event (once).
+     * @return WorkingState if successful, otherwise this.
+     */
     @Override
     public State acceptInput(Workforce workforce, List<Material> materials) {
-
         List<MaterialType> neededMaterials = workforce.getRecipe();
-
         List<Material> foundMaterials = new ArrayList<>();
         List<Material> tempAvailable = new ArrayList<>(materials);
 
@@ -35,11 +38,9 @@ public class IdleState implements State {
                 }
             }
             if(found != null) {
-                //debug log.info(workforce.getName()+ "found material:" + found);
                 foundMaterials.add(found);
                 tempAvailable.remove(found);
-            }
-            else{
+            } else{
                 if (workforce.getEventBus() != null) {
                     if(typeNeeded.isRaw() && !helpRequested) {
                         workforce.getEventBus().publish(new Event(EventType.OUT_OF_INPUT, workforce, 3));
@@ -49,7 +50,6 @@ public class IdleState implements State {
                 return this;
             }
         }
-
         materials.removeAll(foundMaterials);
         workforce.setInputBuffer(foundMaterials);
         workforce.setCurrentProgress(0);
@@ -79,9 +79,13 @@ public class IdleState implements State {
         return this;
     }
 
+    /**
+     * Increases wear at a reduced rate (50% effectiveness) while idling.
+     */
     @Override
     public void increaseWear(Station station) {
-        station.setWear(((station.getWear() + station.getWearPerTick()) * (Math.random() + 0.5)) / 2);  //slower wear when idle
+        double newWear = ((station.getWear() + station.getWearPerTick()) * (Math.random() + 0.5)) / 2;
+        station.setWear(Math.min(newWear, 100));
     }
 
     @Override
@@ -101,9 +105,4 @@ public class IdleState implements State {
         return false;
     }
 
-
-    @Override
-    public String getState() {
-        return "Idle";
-    }
 }

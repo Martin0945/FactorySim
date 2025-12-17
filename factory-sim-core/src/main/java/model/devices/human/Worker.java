@@ -4,10 +4,8 @@ import event.EventBus;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import model.devices.Workforce;
-import model.devices.state.IdleState;
 import model.devices.state.State;
 import model.economy.ConsumptionProfile;
-import model.inspection.Director;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
@@ -20,6 +18,7 @@ import java.util.List;
 public class Worker extends Workforce {
     private final int priority;
     private final EventBus eventBus;
+    private final double WORKER_MULTIPLIER = 2;
 
     public Worker(int pay, int priority, EventBus eventBus, MaterialType outputType,
                   int processDuration, List<MaterialType> recipe, String name) {
@@ -35,22 +34,19 @@ public class Worker extends Workforce {
 
     }
 
+    /**
+     * Pays wages to the worker based on the consumption profile.
+     */
     @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
-    public void consume(){
-        consumption.payWages(profile.wagePerTick());
+    protected void consume(){
+        this.getConsumption().payWages(this.getProfile().wagePerTick());
     }
 
     @Override
     public boolean acceptInput(List<Material> materials) {
         State oldState = state;
 
-        if(inputBuffer == null && outputBuffer == null){
-
+        if(this.getInputBuffer() == null && this.getOutputBuffer() == null){
             state = state.acceptInput(this, materials);
         }
 
@@ -66,21 +62,26 @@ public class Worker extends Workforce {
     }
 
     public void finishWork() {
-        double inputValue = inputBuffer.stream()
+        double inputValue = this.getInputBuffer().stream()
                 .mapToDouble(Material::getValue)
                 .sum();
-        double finalValue = inputValue * getQualityMultiplier() * 2.0;
-        this.outputBuffer = new Material(this.getOutputType(), finalValue);
-        inputBuffer = null;
+        double finalValue = inputValue * getQualityMultiplier() * WORKER_MULTIPLIER;
+
+        this.setOutputBuffer(new Material(this.getOutputType(), finalValue));
+        this.setInputBuffer(null);
     }
 
     public Material takeOutput() {
-        if(outputBuffer == null){
+        Material buffer = this.getOutputBuffer();
+        if(buffer == null){
             return null;
         }
-        Material out = outputBuffer;
-        outputBuffer = null;
-        return out;
+        this.setOutputBuffer(null);
+        return buffer;
     }
 
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
+    }
 }

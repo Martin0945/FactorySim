@@ -7,7 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record ConsumptionReport(List<LineConsumption> lineConsumptions,double totalElectricity,double totalOil,double totalWages, double totalMaterialCosts, double totalRevenue) {
+public record ConsumptionReport(List<LineConsumption> lineConsumptions,double totalElectricity,
+                                double totalOil,double totalWages, double totalMaterialCosts,
+                                double totalRevenue) {
+
+    /**
+     * Iterates through production lines and their workforce to sum up all consumption stats.
+     * Converts domain objects into this lightweight report structure.
+     */
     public static ConsumptionReport fromProductionLines(List<ProductionLine> lines) {
         List<LineConsumption> lineConsumptions = lines.stream().map(line -> {
             double lineElectricity = 0;
@@ -37,6 +44,7 @@ public record ConsumptionReport(List<LineConsumption> lineConsumptions,double to
         double totalWages = lineConsumptions.stream().mapToDouble(l -> l.wages).sum();
         double totalMaterialCosts = lineConsumptions.stream().mapToDouble(l -> l.materialCost).sum();
         double totalRevenue = lineConsumptions.stream().mapToDouble(l -> l.revenue).sum();
+
         return new ConsumptionReport(lineConsumptions, totalElectricity, totalOil, totalWages, totalMaterialCosts, totalRevenue);
     }
 

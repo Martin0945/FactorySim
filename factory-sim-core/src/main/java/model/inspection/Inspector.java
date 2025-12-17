@@ -2,9 +2,7 @@ package model.inspection;
 
 import lombok.extern.java.Log;
 import model.devices.Station;
-import model.devices.Workforce;
 import model.devices.human.Worker;
-import model.devices.human.WorkerFactory;
 import model.devices.machine.Machine;
 import model.devices.robot.Robot;
 import model.factory.Factory;
@@ -13,7 +11,6 @@ import model.production.ProductionLine;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Log
 
@@ -27,6 +24,10 @@ public class Inspector implements Visitor {
 
     }
 
+    /**
+     * Sorts collected stations by wear (highest first) and logs their condition.
+     * Categorizes wear into OK, Worn, or Critical levels.
+     */
     public void reportInspection(){
         List<Station> sortedStations = sortStations();
 
@@ -58,6 +59,9 @@ public class Inspector implements Visitor {
         stations.add(r);
     }
 
+    /**
+     * Workers are not part of the inspection, so this method is empty.
+     */
     @Override
     public void visit(Worker w){
     }

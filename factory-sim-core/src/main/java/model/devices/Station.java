@@ -4,6 +4,7 @@ import event.EventBus;
 import lombok.Getter;
 import lombok.Setter;
 import model.devices.state.State;
+import model.economy.ConsumptionData;
 import model.economy.ConsumptionProfile;
 import model.material.Material;
 
@@ -31,15 +32,24 @@ public abstract class Station extends Workforce {
             consume();
         }
     }
-    @Override public double getQualityMultiplier() {
+
+    /**
+     * Calculates quality based on current wear. Higher wear reduces quality.
+     *
+     * @return Double ranging from 0.8 - 1.2
+     */
+    @Override
+    protected double getQualityMultiplier() {
         return 1.2 - wear*(0.4/breakThreshold); //map 0 - break threshold, to 1.2 - 0.8
     }
 
-
     @Override
-    public void consume(){
-        consumption.consumeElectricity(profile.electricityPerTick()*(1+wear/100));
-        consumption.consumeOil(profile.oilPerTick()*(1+wear/100));
+    protected void consume(){
+        ConsumptionData data = this.getConsumption();
+        ConsumptionProfile prof = this.getProfile();
+
+        data.consumeElectricity(prof.electricityPerTick()*(1+wear/100));
+        data.consumeOil(prof.oilPerTick()*(1+wear/100));
     }
 
     @Override
@@ -64,5 +74,9 @@ public abstract class Station extends Workforce {
     }
 
     public abstract void finishWork();
+
+    /**
+     * Resets the wear level to zero and updates the state.
+     */
     public abstract void repair();
 }

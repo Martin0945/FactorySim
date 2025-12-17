@@ -3,13 +3,11 @@ package model.production;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import model.devices.Workforce;
-import model.economy.ConsumptionData;
 import model.inspection.Visitor;
 import model.material.Material;
 import model.material.MaterialType;
 import simulation.Simulatable;
 import simulation.SimulationContext;
-import simulation.prices.PriceList;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +17,10 @@ import java.util.List;
 public class ProductionLine implements Simulatable {
     private final String name;
     private final List<Workforce> workforces;
-
     private final List<Material> lineStorage = new ArrayList<>();
     private final MaterialType targetOutput;
     private final List<Material> outputs = new ArrayList<>();
+
     private double materialCosts;
     private double revenue;
 
@@ -32,13 +30,22 @@ public class ProductionLine implements Simulatable {
         this.targetOutput = targetOutput;
     }
 
+    /**
+     * Adds a raw material to the line's shared internal storage and updates total material costs.
+     * These materials are later picked up by workforces.
+     */
     public void addInput(Material material) {
         lineStorage.add(material);
 
         materialCosts += material.getValue();
-//        log.info(name + ": Added input " + material.getType());
     }
 
+    /**
+     * Executes one simulation step for the entire line.
+     * 1. Ticks all workforces.
+     * 2. Collects finished items (storing intermediate ones back to line storage, final ones to outputs).
+     * 3. Attempts to distribute waiting materials from storage to idle workforces.
+     */
     @Override
     public void onTick(SimulationContext context) {
         workforces.forEach(Workforce::tick);
@@ -46,20 +53,23 @@ public class ProductionLine implements Simulatable {
         for (Workforce w : workforces) {
             Material product = w.takeOutput();
 
+            //product finished
             if (product != null) {
+                //final product
                 if (product.getType() == targetOutput) {
                     outputs.add(product);
                     revenue += product.getValue();
                     log.info("%s FINISHED: %s".formatted(this.name, product.getType()));
-                    //todo event
+
+                //semi finished product (material)
                 } else {
                     log.info("%s: %s finished product: %s".formatted(name, w.getName(), product.getType()));
                     lineStorage.add(product);
                 }
             }
         }
-
         for (Workforce w : workforces) {
+            //check for every workforce if is able to accept input and start working
             boolean startedWorking = w.acceptInput(lineStorage);
 
             if (startedWorking) {
@@ -68,10 +78,14 @@ public class ProductionLine implements Simulatable {
         }
     }
 
+
     public int getLineStorageCount() {
         return lineStorage.size();
     }
 
+    /**
+     * Allows inspection of the line and recursively visits all contained workforces.
+     */
     public void acceptVisitor(Visitor visitor) {
         visitor.visit(this);
         workforces.forEach(w -> w.acceptVisitor(visitor));

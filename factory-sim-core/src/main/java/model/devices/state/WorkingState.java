@@ -6,7 +6,6 @@ import lombok.extern.java.Log;
 import model.devices.Station;
 import model.devices.Workforce;
 import model.devices.human.Worker;
-import model.devices.machine.Machine;
 import model.material.Material;
 
 import java.util.List;
@@ -14,6 +13,9 @@ import java.util.List;
 @Log
 public class WorkingState implements State {
 
+    /**
+     * Rejects new input while currently working.
+     */
     @Override
     public State acceptInput(Workforce workforce, List<Material> materials) {
         log.info("Accepting input: Machine %s is working, state remains the same"
@@ -21,6 +23,10 @@ public class WorkingState implements State {
         return this;
     }
 
+    /**
+     * Increases work progress. If progress meets duration, finishes work and checks wear.
+     * @return IdleState (or BrokenState) upon completion, otherwise this.
+     */
     @Override
     public State handleTick(Station station){
         station.setCurrentProgress(station.getCurrentProgress()+1);
@@ -33,6 +39,10 @@ public class WorkingState implements State {
         return this;
     }
 
+    /**
+     * Increases work progress. If progress meets duration, finishes work.
+     * @return Idle state if work finished, otherwise this.
+     */
     @Override
     public State handleTick(Worker worker){
         worker.setCurrentProgress(worker.getCurrentProgress()+1);
@@ -60,9 +70,13 @@ public class WorkingState implements State {
         }
     }
 
+    /**
+     * Increases wear at a standard rate.
+     */
     @Override
     public void increaseWear(Station station) {
-        station.setWear(station.getWear() + (station.getWearPerTick() * (Math.random() + 0.5)));  //between 0.5x and 1.5x the normal wear
+        double newWear = station.getWear() + (station.getWearPerTick() * (Math.random() + 0.5)); //between 0.5x and 1.5x the normal wear
+        station.setWear(Math.min(newWear, 100));
     }
 
     @Override
@@ -76,8 +90,4 @@ public class WorkingState implements State {
         return true;
     }
 
-    @Override
-    public String getState() {
-        return "Working";
-    }
 }

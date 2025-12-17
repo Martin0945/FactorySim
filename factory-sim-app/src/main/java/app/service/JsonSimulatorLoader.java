@@ -16,6 +16,11 @@ public class JsonSimulatorLoader {
     private record JsonLine(String name, String outputType, List<JsonWorkforce> workforce) {}
     private record JsonWorkforce(String type, String model) {}
 
+    /**
+     * Reads the specified JSON file from resources and calls the builder.
+     * Parses repairmen and production lines, creating the necessary objects.
+     * @throws RuntimeException if the file is missing or the JSON is invalid.
+     */
     public void loadConfig(SimulationBuilder builder, String fileName) {
         ObjectMapper mapper = new ObjectMapper();
 

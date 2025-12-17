@@ -19,6 +19,9 @@ public class MachineFactory {
         }
     }
 
+    /**
+     * Creates a new Machine instance with custom parameters, bypassing presets.
+     */
     public Machine createMachine(String name, int electricity, int oil, int priority, int wearPerTick,
                                  MaterialType outType, int duration, List<MaterialType> recipe) {
 
@@ -26,6 +29,10 @@ public class MachineFactory {
                 outType, duration, name, recipe);
     }
 
+    /**
+     * Creates a new Worker based on a registered preset name.
+     * @throws IllegalArgumentException if the preset name is unknown.
+     */
     public Machine createMachine(String presetName) {
         MachineConfig cfg = presets.get(presetName);
         if (cfg == null) throw new IllegalArgumentException("Unknown preset: " + presetName);
@@ -43,6 +50,9 @@ public class MachineFactory {
                 );
     }
 
+    /**
+     * Registers a new machine configuration preset or overwrites an existing one.
+     */
     public void registerPreset(String name, MachineConfig cfg) {
         presets.put(name, cfg);
     }

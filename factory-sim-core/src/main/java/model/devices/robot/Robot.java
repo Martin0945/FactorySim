@@ -17,7 +17,8 @@ import java.util.List;
 @Setter
 @Log
 public class Robot extends Station {
-
+    private final double BREAK_THRESHOLD = 70.0;
+    private final double ROBOT_MULTIPLIER = 2.2;
 
     public Robot(String name, int electricity, double wearPerTick, int priority,
                  int processDuration, MaterialType outputType, List<MaterialType> recipe,
@@ -27,29 +28,24 @@ public class Robot extends Station {
         this.setWearPerTick(wearPerTick);
         this.setPriority(priority);
         this.setProcessDuration(processDuration);
-        this.setBreakThreshold(70.0);
+        this.setBreakThreshold(BREAK_THRESHOLD);
         this.setEventBus(eventBus);
         this.setRecipe(recipe);
         this.setProcessDuration(processDuration);
 
         this.setOutputType(outputType);
-
         this.setState(new IdleState());
     }
 
     @Override
     public void finishWork() {
-        double inputValue = inputBuffer.stream()
+        double inputValue = this.getInputBuffer().stream()
                 .mapToDouble(Material::getValue)
                 .sum();
-        double finalValue = inputValue * getQualityMultiplier() * 2.2;
+        double finalValue = inputValue * getQualityMultiplier() * ROBOT_MULTIPLIER;
+
         this.setOutputBuffer(new Material(this.getOutputType(), finalValue));
-
         this.setInputBuffer(null);
-
-        //log.info("Robot %s FINISHED: %s".formatted(this.name, this.outputType));
-        //event
-
     }
 
     @Override

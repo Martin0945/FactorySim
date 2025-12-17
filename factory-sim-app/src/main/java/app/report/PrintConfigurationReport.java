@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 
 @Component
 public class PrintConfigurationReport implements PrintReport {
+
     @Override
     public void printReport(FactoryStateReport factoryData){
         try (PrintWriter writer = new PrintWriter(new FileWriter("configuration.txt"))) {
@@ -23,11 +24,8 @@ public class PrintConfigurationReport implements PrintReport {
                     writer.printf("%s \"%s\" | Input: %s | Output: %s%n",
                             station.type(), station.name(), inputs, station.output());
                 }
-
                 writer.println();
             }
-
-
             log.info("Configuration Report generated");
         }
 

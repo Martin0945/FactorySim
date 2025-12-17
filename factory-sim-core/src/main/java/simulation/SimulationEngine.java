@@ -2,13 +2,16 @@ package simulation;
 
 import event.Event;
 import event.EventBus;
+import event.EventSource;
 import event.EventType;
 import lombok.Getter;
 import lombok.extern.java.Log;
 import model.factory.Factory;
+import simulation.repair.RepairManager;
+
 @Log
 
-public class SimulationEngine {
+public class SimulationEngine implements EventSource {
     private final int DIRECTOR_TICK = 11;
     private final int INSPECTOR_TICK = 12;
 
@@ -24,8 +27,16 @@ public class SimulationEngine {
         this.eventBus = eventBus;
     }
 
+    /**
+     * Executes a single simulation step:
+     * 1. Updates the factory and repair manager.
+     * 2. Advances time.
+     * 3. Triggers periodic visits (Director/Inspector).
+     * 4. Dispatches all queued events.
+     */
     public void runTick() {
         log.info("=================TICK: %d ================%n".formatted(context.getCurrentTick() + 1));
+
         factory.onTick(context);
         repairManager.onTick(context);
         context.nextTick();
@@ -46,4 +57,8 @@ public class SimulationEngine {
         return context.getCurrentTick();
     }
 
+    @Override
+    public String getName(){
+        return "SimulationEngine";
+    }
 }

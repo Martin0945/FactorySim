@@ -5,5 +5,6 @@ public enum EventType {
     REPAIR_STARTED,
     REPAIR_FINISHED,
     INSPECTION,
-    DIRECTOR_VISIT
+    DIRECTOR_VISIT,
+    OUT_OF_INPUT
 }

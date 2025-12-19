@@ -2,50 +2,60 @@ package model.devices.machine;
 
 import event.*;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.java.Log;
 import model.devices.Station;
+import model.economy.ConsumptionProfile;
 import model.inspection.Visitor;
 import model.material.Material;
+import model.material.MaterialType;
+
+import java.util.List;
+
 @Getter
+@Setter
+@Log
 
 public class Machine extends Station {
-    private boolean working = true;
-    private final double wearPerTick = 20.0;
-    private final double breakThreshold = 80.0;
-    private final int priority;
-    private final EventBus eventBus;
-    private final int oil;
-    private MachineType machineType;
+    private final double BREAK_THRESHOLD = 80.0;
+    private final double MACHINE_MULTIPLIER = 2;
 
-    public Machine(MachineType machineType, int electricity, int oil, int priority, EventBus eventBus) {
-        super(electricity);
-        this.machineType = machineType;
-        this.oil = oil;
-        this.priority = priority;
-        this.eventBus = eventBus;
+    public Machine(int electricity, double wearPerTick, int priority, EventBus eventBus,
+                   int oil, MaterialType outputType, int processDuration, String name,
+                   List<MaterialType> recipe) {
+        super(new ConsumptionProfile(electricity,oil,0.0 ), eventBus);
 
+        this.setOutputType(outputType);
+
+        this.setWearPerTick(wearPerTick);
+        this.setPriority(priority);
+        this.setEventBus(eventBus);
+        this.setProcessDuration(processDuration);
+        this.setBreakThreshold(BREAK_THRESHOLD);
+        this.setName(name);
+        this.setRecipe(recipe);
+        this.setProcessDuration(processDuration);
     }
 
     @Override
-    protected void increaseWear() {
-        wear += wearPerTick;
-        if (wear >= breakThreshold && working) {
-            working = false;
-            System.out.println("Machine " + getMachineType() + " broke, wear " + wear + "%");
-
-            if (eventBus != null) {
-                eventBus.publish(new Event(EventType.BREAKDOWN,this,this.priority));
-            }
-        }
+    public void finishWork() {
+        double inputValue = this.getInputBuffer().stream()
+                .mapToDouble(Material::getValue)
+                .sum();
+        double finalValue = inputValue * getQualityMultiplier() * MACHINE_MULTIPLIER;
+        this.setOutputBuffer(new Material(this.getOutputType(),finalValue));
+        this.setInputBuffer(null);
     }
 
+    @Override
     public void repair() {
-        this.working = true;
-        wear = 0;
-        System.out.println("Repaired " + getMachineType());
+        this.setWear(0);
+        state = state.checkWear(this);
+        log.info("Machine %s was repaired/serviced.".formatted(this.getName()));
     }
 
-
-    public void acceptVisitor(Visitor v){
-        v.visit(this);
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 }

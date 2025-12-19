@@ -1,28 +1,37 @@
 package model.factory;
 
-import lombok.AllArgsConstructor;
-import model.devices.human.Worker;
-import model.devices.machine.Machine;
-import model.devices.robot.Robot;
+import lombok.Getter;
+import model.inspection.Visitor;
 import model.production.ProductionLine;
 import simulation.Simulatable;
 import simulation.SimulationContext;
 
 import java.util.List;
 
-@AllArgsConstructor
-
 public class Factory implements Simulatable {
-    private String name;
-    private List<ProductionLine> productionLines;
-    private List<Worker> workers;
-    private List<Machine> machines;
-    private List<Robot> robots;
-    private Inventory inventory;
+    @Getter
+    private final String name;
+    private final List<ProductionLine> productionLines;
 
+    public Factory(String factoryName, List<ProductionLine> lines) {
+        this.name = factoryName;
+        this.productionLines = lines;
+    }
 
+    /**
+     * Sends the simulation tick further to all production lines in this factory.
+     */
     @Override
     public void onTick(SimulationContext context) {
         productionLines.forEach(pl -> pl.onTick(context));
     }
+
+    /**
+     * Accepts a visitor and passes it down to all production lines recursively.
+     */
+    public void acceptVisitor(Visitor visitor){
+        visitor.visit(this);
+        productionLines.forEach(pl -> pl.acceptVisitor(visitor));
+    }
+
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Factory Simulation Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<h1>Factory Simulation</h1>
+
+<div class="layout">
+
+    <!-- LEFT COLUMN -->
+    <div class="left">
+
+        <div class="panel">
+            <h3>Tick Control</h3>
+            <label>
+                Interval (ms):
+                <input type="number" id="tickInterval" value="1000" min="100"/>
+            </label>
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+        </div>
+
+        <div class="panel">
+            <h3>Tick out</h3>
+            <textarea id="tickOut" readonly></textarea>
+        </div>
+
+        <div class="panel">
+            <h3>Report type</h3>
+            <label><input type="radio" name="reportType" value="all" checked> All</label>
+            <label><input type="radio" name="reportType" value="config"> Configuration</label>
+            <label><input type="radio" name="reportType" value="events"> Event summary</label>
+            <label><input type="radio" name="reportType" value="consumption"> Consumption</label>
+            <label><input type="radio" name="reportType" value="outages"> Outages</label>
+        </div>
+
+        <div class="panel">
+            <h3>Factory state</h3>
+            <button id="loadStateBtn">Load state</button>
+            <textarea id="stateOut" readonly class="report-area"></textarea>
+        </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right">
+        <div class="panel">
+            <h3>Live Events</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

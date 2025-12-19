@@ -3,12 +3,33 @@ package model.inspection;
 import model.devices.human.Worker;
 import model.devices.machine.Machine;
 import model.devices.robot.Robot;
+import model.factory.Factory;
+import model.production.ProductionLine;
 
 public interface Visitor {
-    void visit(Machine m);
+    /**
+     * Collects data about machine.
+     */
+    void visit(Machine machine);
 
-    void visit(Robot r);
+    /**
+     * Collects data about robot.
+     */
+    void visit(Robot robot);
 
-    void visit(Worker w);
+    /**
+     * Collects data about worker. only director.
+     */
+    void visit(Worker worker);
+
+    /**
+     * Collects data about factory.
+     */
+    void visit(Factory factory);
+
+    /**
+     * Collects data about production line.
+     */
+    void visit(ProductionLine prodLine);
 
 }

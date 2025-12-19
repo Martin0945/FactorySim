@@ -1,58 +1,94 @@
 package model.production;
 
 import lombok.Getter;
-import model.devices.Station;
+import lombok.extern.java.Log;
 import model.devices.Workforce;
+import model.inspection.Visitor;
 import model.material.Material;
+import model.material.MaterialType;
 import simulation.Simulatable;
 import simulation.SimulationContext;
-
 import java.util.ArrayList;
 import java.util.List;
 
+@Log
+@Getter
+
 public class ProductionLine implements Simulatable {
-    private String name;
-    private List<Workforce> workforces;
-    private final List<Material> buffers;
-    @Getter
+    private final String name;
+    private final List<Workforce> workforces;
+    private final List<Material> lineStorage = new ArrayList<>();
+    private final MaterialType targetOutput;
     private final List<Material> outputs = new ArrayList<>();
 
-    public ProductionLine(String name, List<Workforce> workforces) {
+    private double materialCosts;
+    private double revenue;
+
+    public ProductionLine(String name, List<Workforce> workforces, MaterialType targetOutput) {
         this.name = name;
         this.workforces = workforces;
-        this.buffers = new ArrayList<>();
-        workforces.forEach(w -> buffers.add(null));
+        this.targetOutput = targetOutput;
     }
 
-    //put material into first station buffer
+    /**
+     * Adds a raw material to the line's shared internal storage and updates total material costs.
+     * These materials are later picked up by workforces.
+     */
     public void addInput(Material material) {
-        buffers.set(0, material);
+        lineStorage.add(material);
+
+        materialCosts += material.getValue();
     }
 
+    /**
+     * Executes one simulation step for the entire line.
+     * 1. Ticks all workforces.
+     * 2. Collects finished items (storing intermediate ones back to line storage, final ones to outputs).
+     * 3. Attempts to distribute waiting materials from storage to idle workforces.
+     */
     @Override
     public void onTick(SimulationContext context) {
-//        for (int i = workforces.size() - 1; i >= 0; i--) {
-//            Material current = buffers.get(i);
-//            if (current == null) continue;
-//            //process current material
-//            Material processed = workforces.get(i).process(current);
-//
-//            //if this is last station, store output
-//            if (i == workforces.size() - 1) {
-//                outputs.add(processed);
-//            }
-//            else {
-//                //move to next station if empty
-//                if (buffers.get(i + 1) == null) {
-//                    buffers.set(i + 1, processed);
-//                    buffers.set(i, null);
-//                }
-//                //else wait for next tick
-//                else {
-//                    buffers.set(i, processed);
-//                }
-//            }
-//        }
+        workforces.forEach(Workforce::tick);
+
+        for (Workforce w : workforces) {
+            Material product = w.takeOutput();
+
+            //product finished
+            if (product != null) {
+                //final product
+                if (product.getType() == targetOutput) {
+                    outputs.add(product);
+                    revenue += product.getValue();
+                    log.info("%s FINISHED: %s".formatted(this.name, product.getType()));
+
+                //semi finished product (material)
+                } else {
+                    log.info("%s: %s finished product: %s".formatted(name, w.getName(), product.getType()));
+                    lineStorage.add(product);
+                }
+            }
+        }
+        for (Workforce w : workforces) {
+            //check for every workforce if is able to accept input and start working
+            boolean startedWorking = w.acceptInput(lineStorage);
+
+            if (startedWorking) {
+                log.info("%s: %s took ingredients and started working.".formatted(name, w.getName()));
+            }
+        }
+    }
+
+
+    public int getLineStorageCount() {
+        return lineStorage.size();
+    }
+
+    /**
+     * Allows inspection of the line and recursively visits all contained workforces.
+     */
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
+        workforces.forEach(w -> w.acceptVisitor(visitor));
     }
 
 }

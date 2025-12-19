@@ -1,0 +1,29 @@
+{
+  "lines": [
+    {
+      "name": "Line Scooter",
+      "outputType": "PAINTED_SCOOTER",
+      "workforce": [
+        { "type": "MACHINE", "model": "LaserCutter" },
+        { "type": "MACHINE", "model": "PlasticMolder" },
+        { "type": "ROBOT", "model": "AssemblyRobotSC" },
+        { "type": "ROBOT", "model":  "PaintRobotSC"},
+        { "type": "WORKER", "model":  "EUI"},
+        { "type": "WORKER", "model": "WheelAssembler" }
+      ]
+    },
+    {
+      "name": "Line Phone",
+      "outputType": "PAINTED_PHONE",
+      "workforce": [
+        { "type": "MACHINE", "model": "GlassCutter" },
+        { "type": "MACHINE", "model": "CaseMaker" },
+        { "type": "ROBOT", "model": "PaintRobotPhone" },
+        { "type": "ROBOT", "model": "AssemblyRobotPhone" },
+        { "type": "WORKER", "model":  "EUI"}
+      ]
+    }
+  ],
+
+  "repairmen": ["Bob", "Job"]
+}
